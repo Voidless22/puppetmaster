@@ -22,7 +22,8 @@ function groupWindow.DrawGroupWindow(charName, charTable)
             if charTable.Group[currentMember] ~= nil and charTable.Group[currentMember] ~= 'Empty' and mq.TLO.Spawn(charTable.Group[currentMember])() ~= nil then
                 local cursorPos = ImGui.GetCursorPosVec()
                 GrpHPRatio[currentMember] = mq.TLO.Spawn(charTable.Group[currentMember]).PctHPs() / 100 or 0
-                GrpManaRatio[currentMember] = mq.TLO.Group.Member(mq.TLO.Spawn(charTable.Group[currentMember]).Name()).PctMana() / 100 or 0
+                GrpManaRatio[currentMember] = mq.TLO.Group.Member(mq.TLO.Spawn(charTable.Group[currentMember]).Name())
+                    .PctMana() / 100 or 0
                 ImGui.Text(mq.TLO.Spawn(charTable.Group[currentMember]).Name())
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 255, 0, 0, 255)
@@ -37,9 +38,17 @@ function groupWindow.DrawGroupWindow(charName, charTable)
                     mq.TLO.Spawn(charTable.Group[currentMember]).Name(), 128,
                     35)
                 if groupButtons[currentMember] then
-                    DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', char = charName },
-                        { id = 'newTarget', charName = charName, targetId = mq.TLO.Spawn(charTable.Group[currentMember])
-                        .Name() })
+                    if charName ~= mq.TLO.Me.Name() then
+                        DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', char = charName },
+                            {
+                                id = 'newTarget',
+                                charName = charName,
+                                targetId = mq.TLO.Spawn(charTable.Group[currentMember])
+                                    .Name()
+                            })
+                    else
+                        mq.cmdf('/mqtarget id %i', mq.TLO.Spawn(charTable.Group[currentMember]).ID())
+                    end 
                 end
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY())
             end

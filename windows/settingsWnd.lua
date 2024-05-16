@@ -61,8 +61,8 @@ function settingsWnd.DrawSettingsWindow()
                         if clicked then
                             Settings[settingName][toonName] = not Settings[settingName][toonName]
                             Settings[showName][toonName] = not Settings[showName][toonName]
-                            mq.pickle('mimicSettings.lua', Settings)
-                            local newFileData, error = loadfile(mq.configDir .. '/' .. 'mimicSettings.lua')
+                            mq.pickle('PMSettings.lua', Settings)
+                            local newFileData, error = loadfile(mq.configDir .. '/' .. 'PMSettings.lua')
                             if newFileData then
                                 Settings = newFileData()
                             end

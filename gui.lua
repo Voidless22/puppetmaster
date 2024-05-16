@@ -32,19 +32,40 @@ local typeHandlers = {
 local function OpenAllInstances(open, show, name, type, windowflags)
     for charName, isOpen in pairs(open) do
         if open[charName] then
-            open[charName], show[charName] = ImGui.Begin(name..'-'..charName, show[charName], windowflags)
+            open[charName], show[charName] = ImGui.Begin(name .. '-' .. charName, show[charName], windowflags)
             if show[charName] then
                 local handler = typeHandlers[type]
                 if handler then
-                    handler(charName,dataHandler.GetData(charName))
+                    handler(charName, dataHandler.GetData(charName))
                 end
             end
             ImGui.End()
         end
     end
 end
+local function getFilePath(fileName)
+    local filePath = debug.getinfo(1, 'S').short_src
+    local path = filePath:match("(.+\\)") .. fileName
+    return path
+end
+local PMIconFile = getFilePath('PM.png')
+local PMIconTexture = mq.CreateTexture(PMIconFile)
 
- 
+local function drawPMButton()
+    local draw_list = ImGui.GetWindowDrawList()
+    ImGui.SetWindowSize(64, 64)
+    ImGui.SetCursorPos(0,0)
+    local bgPos = ImGui.GetWindowPosVec()
+    draw_list:AddImage(PMIconTexture:GetTextureID(), bgPos, ImVec2(bgPos.x + 64, bgPos.y + 64))
+    --ImGui.Image
+    ImGui.SetCursorPos(0, 0)
+    local pmButton = ImGui.InvisibleButton('Settings', 60, 60)
+    if pmButton then
+        OpenSettings = not OpenSettings
+    end
+end
+
+
 function gui.guiLoop()
     OpenAllInstances(Settings.OpenSpellbar, Settings.ShowSpellbar, "Spellbar", "Spellbar", window_flags)
     OpenAllInstances(Settings.OpenGroup, Settings.ShowGroup, "Group", "Group", window_flags)
@@ -60,6 +81,13 @@ function gui.guiLoop()
         OpenSettings, ShowSettings = ImGui.Begin('Settings', OpenSettings)
         if ShowSettings then
             settingsWnd.DrawSettingsWindow()
+        end
+        ImGui.End()
+    end
+    if gui.openGui then
+        gui.openGui, gui.showGui = ImGui.Begin('PMButton', gui.showGui, window_flags)
+        if gui.showGui then
+            drawPMButton()
         end
         ImGui.End()
     end

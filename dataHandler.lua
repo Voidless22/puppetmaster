@@ -35,7 +35,7 @@ function dataHandler.UpdateData(boxName)
     currentBoxIndex.Spellbook = {}
     currentBoxIndex.CombatAbilities = {}
     currentBoxIndex.Group = {}
-    for member = 1, mq.TLO.Me.GroupSize() do
+    for member = 0, mq.TLO.Me.GroupSize() do
         currentBoxIndex.Group[member] = mq.TLO.Group.Member(member).ID()
     end
     printf('\awInitializing Data: %s\n Class: %s | Race: %s\nCurrent HP: %i  | Current Mana: %i  | Current Endurance: %i ', 
