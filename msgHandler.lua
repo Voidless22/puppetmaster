@@ -18,7 +18,7 @@ function msgHandler.boxMessageHandler(message)
         ReadyToGo = true
     end
     if msgId == 'UpdateData' then
-        dataHandler.UpdateData(mq.TLO.Me.Name())
+       -- dataHandler.UpdateData(mq.TLO.Me.Name())
         message:send({ id = 'UpdatedData', boxName = mq.TLO.Me.Name(), boxData = dataHandler.GetData(mq.TLO.Me.Name()) })
     end
     if msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
@@ -61,17 +61,7 @@ function msgHandler.driverMessageHandler(message)
     end
     if msgId == 'UpdatedData' then
         dataHandler.boxes[message.content.boxName] = message.content.boxData
-        local boxDataIndex = dataHandler.boxes[message.content.boxName]
 
-        printf('\awUpdating Data for \at%s', message.content.boxName)
-        printf('\awLevel: \at%i \awClass: \at%s \awRace: \at%s', boxDataIndex.Level, boxDataIndex.Class,
-            boxDataIndex.Race)
-        printf('\awCurrent HP Pct: \at%i, \awCurrent Mana Pct: \at%i, \awCurrent End Pct: \at%i', boxDataIndex.PctHP,
-            boxDataIndex.PctMana, boxDataIndex.PctEnd)
-        printf('\awSpellbar:')
-        for gem = 1, #boxDataIndex.Spellbar do
-            printf('\aw%i : \at%s', gem, mq.TLO.Spell(boxDataIndex.Spellbar[gem]).Name())
-        end
     end
 end
 

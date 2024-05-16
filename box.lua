@@ -13,15 +13,17 @@ while not msgHandler.boxReady() do
     print('attempting to connect')
     boxActor:send(driverAddress, { id = 'Connect', boxName = boxName })
     mq.delay(100)
-
 end
 
 local function main()
     while Running do
-        mq.delay(100)
+        mq.delay(500)
+        dataHandler.UpdateData(mq.TLO.Me.Name())
+        boxActor:send(driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
     end
 end
 
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
 dataHandler.UpdateData(mq.TLO.Me.Name())
+boxActor:send(driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
 main()

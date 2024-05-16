@@ -57,8 +57,7 @@ local function drawPMButton()
     ImGui.SetCursorPos(0,0)
     local bgPos = ImGui.GetWindowPosVec()
     draw_list:AddImage(PMIconTexture:GetTextureID(), bgPos, ImVec2(bgPos.x + 64, bgPos.y + 64))
-    --ImGui.Image
-    ImGui.SetCursorPos(0, 0)
+
     local pmButton = ImGui.InvisibleButton('Settings', 60, 60)
     if pmButton then
         OpenSettings = not OpenSettings
