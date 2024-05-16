@@ -4,6 +4,7 @@ local settingsWnd = require('windows/settingsWnd')
 local dataHandler = require('dataHandler')
 local spellbarWnd = require('windows/spellbarWnd')
 local groupWindow = require('windows/groupWindow')
+local targetWindow= require('windows/targetWindow')
 local gui = {}
 
 local window_flags = 0
@@ -22,7 +23,7 @@ local typeHandlers = {
     Spellbar = spellbarWnd.DrawSpellbar,
     Group = groupWindow.DrawGroupWindow,
     --Xtar = mimicXTarget.DrawMimicXTargetWindow,
-    --Target = mimicTarget.DrawMimicTargetWindow,
+    Target = targetWindow.DrawTargetWindow,
     --Pet = mimicPet.DrawPetWindow,
     --["Control Dash"] = mimicControlDash.DrawControlDash,
     --Buffs = mimicBuffWindow.DrawMimicBuffWindow,
@@ -69,7 +70,7 @@ function gui.guiLoop()
     OpenAllInstances(Settings.OpenSpellbar, Settings.ShowSpellbar, "Spellbar", "Spellbar", window_flags)
     OpenAllInstances(Settings.OpenGroup, Settings.ShowGroup, "Group", "Group", window_flags)
     OpenAllInstances(Settings.OpenXTarget, Settings.ShowXTarget, "Mimic XTarget", 'Xtar', window_flags)
-    OpenAllInstances(Settings.OpenTarget, Settings.ShowTarget, "Mimic Target", 'Target', window_flags)
+    OpenAllInstances(Settings.OpenTarget, Settings.ShowTarget, "Target", 'Target', window_flags)
     OpenAllInstances(Settings.OpenPet, Settings.ShowPet, "Mimic Pet", "Pet", window_flags)
     OpenAllInstances(Settings.OpenDash, Settings.ShowDash, "Control Dash", "Control Dash", window_flags)
     OpenAllInstances(Settings.OpenBuffs, Settings.ShowBuffs, "Mimic Buffs", "Buffs",

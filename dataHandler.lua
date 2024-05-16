@@ -28,6 +28,30 @@ function dataHandler.UpdateData(boxName)
     currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
     currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
     currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
+    currentBoxIndex.targetID = mq.TLO.Target.ID()
+    if not currentBoxIndex.targetBuffs then currentBoxIndex.targetBuffs = {} end
+    local targetBuffCount = mq.TLO.Target.BuffCount()
+    if targetBuffCount == 0 then
+        for i =0, #currentBoxIndex.targetBuffs do
+            currentBoxIndex.targetBuffs[i] = nil
+        end
+    elseif mq.TLO.Target.BuffCount() > 0 and mq.TLO.Target.ID() ~= 0 then
+        for i = 0, targetBuffCount do
+            local buffFound = false
+            if mq.TLO.Target.Buff(i).SpellID() ~= nil and currentBoxIndex.targetBuffs[i] ~= mq.TLO.Target.Buff(i).SpellID() then
+                for _, value in pairs(currentBoxIndex.targetBuffs) do
+                    if value == mq.TLO.Target.Buff(i).SpellID() then
+                        buffFound = true
+                    end
+                end
+            end
+            if not buffFound then
+                currentBoxIndex.targetBuffs[i] = mq.TLO.Target.Buff(i).SpellID()
+            end
+        end
+    end
+
+    
     currentBoxIndex.Spellbar = {}
     for gem = 1, mq.TLO.Me.NumGems() do
         currentBoxIndex.Spellbar[gem] = mq.TLO.Me.Gem(gem).ID()
