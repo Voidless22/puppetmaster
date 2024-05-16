@@ -28,14 +28,15 @@ Settings = {
 OpenSettings = false
 ShowSettings = false
 
-local driverActor = actors.register('Driver', msgHandler.driverMessageHandler)
+DriverActor = actors.register('Driver', msgHandler.driverMessageHandler)
+
 local boxAddress = { mailbox = 'Box', script = 'puppetmaster/box' }
-driverActor:send(boxAddress, { id = 'Connect' })
+DriverActor:send(boxAddress, { id = 'Connect' })
 
 mq.imgui.init('Puppetmaster', gui.guiLoop)
 
 local function updateBoxData()
-    driverActor:send(boxAddress, { id = 'UpdateData' })
+    DriverActor:send(boxAddress, { id = 'UpdateData' })
 end
 
 

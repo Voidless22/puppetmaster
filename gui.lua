@@ -2,6 +2,7 @@ local mq = require('mq')
 local imgui = require('ImGui')
 local settingsWnd = require('windows/settingsWnd')
 local dataHandler = require('dataHandler')
+local spellbarWnd = require('windows.spellbarWnd')
 local gui = {}
 
 local window_flags = 0
@@ -17,7 +18,7 @@ gui.showGui, gui.openGui = true, true
 
 
 local typeHandlers = {
-    --Spellbar = mimicSpellbar.DrawSpellbar,
+    Spellbar = spellbarWnd.DrawSpellbar,
     --Group = mimicGroup.DrawMimicGroupWindow,
     --Xtar = mimicXTarget.DrawMimicXTargetWindow,
     --Target = mimicTarget.DrawMimicTargetWindow,
@@ -30,11 +31,11 @@ local typeHandlers = {
 local function OpenAllInstances(open, show, name, type, windowflags)
     for charName, isOpen in pairs(open) do
         if open[charName] then
-            open[charName], show[charName] = ImGui.Begin(name .. charName, show[charName], windowflags)
+            open[charName], show[charName] = ImGui.Begin(name..'-'..charName, show[charName], windowflags)
             if show[charName] then
                 local handler = typeHandlers[type]
                 if handler then
-                    handler(charName, dataHandler.boxes[charName])
+                    handler(charName,dataHandler.GetData(charName))
                 end
             end
             ImGui.End()
@@ -44,7 +45,7 @@ end
 
  
 function gui.guiLoop()
-    OpenAllInstances(Settings.OpenSpellbar, Settings.ShowSpellbar, "Mimic Bar", "Spellbar", window_flags)
+    OpenAllInstances(Settings.OpenSpellbar, Settings.ShowSpellbar, "Spellbar", "Spellbar", window_flags)
     OpenAllInstances(Settings.OpenGroup, Settings.ShowGroupWindow, "Mimic Group", "Group", window_flags)
     OpenAllInstances(Settings.OpenXTarget, Settings.ShowXTarget, "Mimic XTarget", 'Xtar', window_flags)
     OpenAllInstances(Settings.OpenTarget, Settings.ShowTarget, "Mimic Target", 'Target', window_flags)

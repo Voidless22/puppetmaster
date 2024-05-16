@@ -20,6 +20,9 @@ function msgHandler.boxMessageHandler(message)
     if msgId == 'UpdateData' then
         message:send({id = 'UpdatedData', boxName = mq.TLO.Me.Name(), boxData = dataHandler.boxes[mq.TLO.Me.Name()]})
     end
+    if msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
+        mq.cmdf('/cast %i', message.content.gem)
+    end
 end
 
 function msgHandler.driverMessageHandler(message)
