@@ -5,6 +5,7 @@ local dataHandler = require('dataHandler')
 local spellbarWnd = require('windows/spellbarWnd')
 local groupWindow = require('windows/groupWindow')
 local targetWindow= require('windows/targetWindow')
+local buffWindow  = require('windows.buffWindow')
 local gui = {}
 
 local window_flags = 0
@@ -26,7 +27,7 @@ local typeHandlers = {
     Target = targetWindow.DrawTargetWindow,
     --Pet = mimicPet.DrawPetWindow,
     --["Control Dash"] = mimicControlDash.DrawControlDash,
-    --Buffs = mimicBuffWindow.DrawMimicBuffWindow,
+    Buffs = buffWindow.DrawBuffWindow,
     --Loadout = mimicLoadoutWindow.DrawMimicLoadoutWindow
 }
 
@@ -73,7 +74,7 @@ function gui.guiLoop()
     OpenAllInstances(Settings.OpenTarget, Settings.ShowTarget, "Target", 'Target', window_flags)
     OpenAllInstances(Settings.OpenPet, Settings.ShowPet, "Mimic Pet", "Pet", window_flags)
     OpenAllInstances(Settings.OpenDash, Settings.ShowDash, "Control Dash", "Control Dash", window_flags)
-    OpenAllInstances(Settings.OpenBuffs, Settings.ShowBuffs, "Mimic Buffs", "Buffs",
+    OpenAllInstances(Settings.OpenBuffs, Settings.ShowBuffs, "Buffs", "Buffs",
         bit32.bor(ImGuiWindowFlags.NoTitleBar))
     OpenAllInstances(Settings.OpenLoadout, Settings.ShowLoadout, "Loadout", "Loadout", window_flags)
 

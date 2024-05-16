@@ -13,9 +13,33 @@ function dataHandler.AddNewCharacter(charName)
         printf('\agDataHandler: \arCharacter Data Entry creation attempted, but already exists.')
     end
 end
+
 function dataHandler.GetData(charName)
     if dataHandler.boxes[charName] then
         return dataHandler.boxes[charName]
+    end
+end
+
+local function updateBuffs(boxName)
+    local buffCount = mq.TLO.Me.BuffCount()
+    local currentBoxIndex = dataHandler.boxes[boxName]
+    if buffCount == 0 then
+        for i = 0, #currentBoxIndex.Buffs do
+            currentBoxIndex.Buffs[i] = nil
+        end
+    end
+    for index = 1, mq.TLO.Me.MaxBuffSlots() do
+        local buffFound = false
+        if mq.TLO.Me.Buff(index).Spell.ID() ~= nil then
+            for _, value in pairs(currentBoxIndex.Buffs) do
+                if value == mq.TLO.Me.Buff(index).Spell.ID() then
+                    buffFound = true
+                end
+            end
+        end
+        if not buffFound then
+            currentBoxIndex.Buffs[index] = mq.TLO.Me.Buff(index).Spell.ID()
+        end
     end
 end
 
@@ -28,11 +52,13 @@ function dataHandler.UpdateData(boxName)
     currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
     currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
     currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
-    currentBoxIndex.targetID = mq.TLO.Target.ID()
     if not currentBoxIndex.targetBuffs then currentBoxIndex.targetBuffs = {} end
+    if not currentBoxIndex.Buffs then currentBoxIndex.Buffs = {} end
+    updateBuffs(boxName)
+    currentBoxIndex.targetID = mq.TLO.Target.ID()
     local targetBuffCount = mq.TLO.Target.BuffCount()
     if targetBuffCount == 0 then
-        for i =0, #currentBoxIndex.targetBuffs do
+        for i = 0, #currentBoxIndex.targetBuffs do
             currentBoxIndex.targetBuffs[i] = nil
         end
     elseif mq.TLO.Target.BuffCount() > 0 and mq.TLO.Target.ID() ~= 0 then
@@ -51,7 +77,7 @@ function dataHandler.UpdateData(boxName)
         end
     end
 
-    
+
     currentBoxIndex.Spellbar = {}
     for gem = 1, mq.TLO.Me.NumGems() do
         currentBoxIndex.Spellbar[gem] = mq.TLO.Me.Gem(gem).ID()
@@ -62,8 +88,10 @@ function dataHandler.UpdateData(boxName)
     for member = 0, mq.TLO.Me.GroupSize() do
         currentBoxIndex.Group[member] = mq.TLO.Group.Member(member).ID()
     end
-    printf('\awInitializing Data: %s\n Class: %s | Race: %s\nCurrent HP: %i  | Current Mana: %i  | Current Endurance: %i ', 
-    boxName, currentBoxIndex.Class, currentBoxIndex.Race,currentBoxIndex.PctHP, currentBoxIndex.PctMana, currentBoxIndex.PctEnd)
+    printf(
+        '\awInitializing Data: %s\n Class: %s | Race: %s\nCurrent HP: %i  | Current Mana: %i  | Current Endurance: %i ',
+        boxName, currentBoxIndex.Class, currentBoxIndex.Race, currentBoxIndex.PctHP, currentBoxIndex.PctMana,
+        currentBoxIndex.PctEnd)
 end
 
 return dataHandler
