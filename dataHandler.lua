@@ -20,7 +20,7 @@ function dataHandler.GetData(charName)
 end
 
 
-function dataHandler.InitializeData(boxName)
+function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     currentBoxIndex.Level = mq.TLO.Me.Level()
     currentBoxIndex.Class = mq.TLO.Me.Class()
@@ -34,6 +34,10 @@ function dataHandler.InitializeData(boxName)
     end
     currentBoxIndex.Spellbook = {}
     currentBoxIndex.CombatAbilities = {}
+    currentBoxIndex.Group = {}
+    for member = 1, mq.TLO.Me.GroupSize() do
+        currentBoxIndex.Group[member] = mq.TLO.Group.Member(member).ID()
+    end
     printf('\awInitializing Data: %s\n Class: %s | Race: %s\nCurrent HP: %i  | Current Mana: %i  | Current Endurance: %i ', 
     boxName, currentBoxIndex.Class, currentBoxIndex.Race,currentBoxIndex.PctHP, currentBoxIndex.PctMana, currentBoxIndex.PctEnd)
 end

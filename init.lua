@@ -56,7 +56,7 @@ for index, value in pairs(Settings) do
         end
     end
 end
-dataHandler.InitializeData(mq.TLO.Me.Name())
+dataHandler.UpdateData(mq.TLO.Me.Name())
 mq.bind('/pmsettings', function() OpenSettings = not OpenSettings end)
 mq.bind('/updatedata', updateBoxData)
 main()

@@ -23,5 +23,5 @@ local function main()
 end
 
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
-dataHandler.InitializeData(mq.TLO.Me.Name())
+dataHandler.UpdateData(mq.TLO.Me.Name())
 main()

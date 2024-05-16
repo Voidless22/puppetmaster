@@ -18,10 +18,14 @@ function msgHandler.boxMessageHandler(message)
         ReadyToGo = true
     end
     if msgId == 'UpdateData' then
-        message:send({id = 'UpdatedData', boxName = mq.TLO.Me.Name(), boxData = dataHandler.boxes[mq.TLO.Me.Name()]})
+        dataHandler.UpdateData(mq.TLO.Me.Name())
+        message:send({id = 'UpdatedData', boxName = mq.TLO.Me.Name(), boxData = dataHandler.GetData(mq.TLO.Me.Name())})
     end
     if msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmdf('/cast %i', message.content.gem)
+    end
+    if msgId == 'newTarget' and message.content.charName == mq.TLO.Me.Name() then
+        mq.cmdf('/target %s', message.content.targetId)
     end
 end
 

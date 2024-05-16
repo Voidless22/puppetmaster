@@ -2,7 +2,8 @@ local mq = require('mq')
 local imgui = require('ImGui')
 local settingsWnd = require('windows/settingsWnd')
 local dataHandler = require('dataHandler')
-local spellbarWnd = require('windows.spellbarWnd')
+local spellbarWnd = require('windows/spellbarWnd')
+local groupWindow = require('windows/groupWindow')
 local gui = {}
 
 local window_flags = 0
@@ -19,7 +20,7 @@ gui.showGui, gui.openGui = true, true
 
 local typeHandlers = {
     Spellbar = spellbarWnd.DrawSpellbar,
-    --Group = mimicGroup.DrawMimicGroupWindow,
+    Group = groupWindow.DrawGroupWindow,
     --Xtar = mimicXTarget.DrawMimicXTargetWindow,
     --Target = mimicTarget.DrawMimicTargetWindow,
     --Pet = mimicPet.DrawPetWindow,
@@ -46,7 +47,7 @@ end
  
 function gui.guiLoop()
     OpenAllInstances(Settings.OpenSpellbar, Settings.ShowSpellbar, "Spellbar", "Spellbar", window_flags)
-    OpenAllInstances(Settings.OpenGroup, Settings.ShowGroupWindow, "Mimic Group", "Group", window_flags)
+    OpenAllInstances(Settings.OpenGroup, Settings.ShowGroup, "Group", "Group", window_flags)
     OpenAllInstances(Settings.OpenXTarget, Settings.ShowXTarget, "Mimic XTarget", 'Xtar', window_flags)
     OpenAllInstances(Settings.OpenTarget, Settings.ShowTarget, "Mimic Target", 'Target', window_flags)
     OpenAllInstances(Settings.OpenPet, Settings.ShowPet, "Mimic Pet", "Pet", window_flags)
