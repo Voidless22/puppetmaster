@@ -7,27 +7,35 @@ local dataHandler = require('dataHandler')
 local running = true
 DebugMode = true
 Settings = {
-    OpenSpellbar = {},ShowSpellbar = {},
-    OpenGroup = {},ShowGroup = {},
-    OpenXTarget = {},ShowXTarget = {},
-    OpenTarget = {}, ShowTarget = {},
-    OpenPet = {}, ShowPet = {},
-    OpenDash = {}, ShowDash = {},
-    OpenBuffs = {}, ShowBuffs = {},
-    OpenLoadout = {}, ShowLoadout = {},
+    OpenSpellbar = {},
+    ShowSpellbar = {},
+    OpenGroup = {},
+    ShowGroup = {},
+    OpenXTarget = {},
+    ShowXTarget = {},
+    OpenTarget = {},
+    ShowTarget = {},
+    OpenPet = {},
+    ShowPet = {},
+    OpenDash = {},
+    ShowDash = {},
+    OpenBuffs = {},
+    ShowBuffs = {},
+    OpenLoadout = {},
+    ShowLoadout = {},
 
 }
 OpenSettings = false
 ShowSettings = false
 
 local driverActor = actors.register('Driver', msgHandler.driverMessageHandler)
-local boxAddress = {mailbox='Box',script='puppetmaster/box'}
-driverActor:send(boxAddress, {id='Connect'})
+local boxAddress = { mailbox = 'Box', script = 'puppetmaster/box' }
+driverActor:send(boxAddress, { id = 'Connect' })
 
 mq.imgui.init('Puppetmaster', gui.guiLoop)
 
 local function updateBoxData()
-driverActor:send(boxAddress, {id='UpdateData'})
+    driverActor:send(boxAddress, { id = 'UpdateData' })
 end
 
 
@@ -41,10 +49,13 @@ for index, value in pairs(Settings) do
     if not Settings[index][mq.TLO.Me.Name()] then
         Settings[index][mq.TLO.Me.Name()] = false
     end
+    for charName, value in pairs(dataHandler.boxes) do
+        if not Settings[index][charName] then
+            Settings[index][mq.TLO.Me.Name()] = false
+        end
+    end
 end
 dataHandler.InitializeData(mq.TLO.Me.Name())
-mq.bind('/pmsettings', function () OpenSettings = not OpenSettings end)
+mq.bind('/pmsettings', function() OpenSettings = not OpenSettings end)
 mq.bind('/updatedata', updateBoxData)
 main()
-
-

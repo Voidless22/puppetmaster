@@ -45,9 +45,8 @@ function settingsWnd.DrawSettingsWindow()
     settingsWnd.GetSections()
     settingsWnd.sectionHandler()
 
-    local section = settingsWnd.characterList.items[settingsWnd.characterList.selected]
     ImGui.SetCursorPos(170, 60)
-
+    local section = settingsWnd.characterList.items[settingsWnd.characterList.selected]
     for settingName, value in pairs(Settings) do
         for toonName, settingValue in pairs(Settings[settingName]) do
             if toonName == section then
@@ -58,26 +57,15 @@ function settingsWnd.DrawSettingsWindow()
                         ImGui.SameLine()
                         ImGui.SetCursorPosX(350)
                         local settingValue, clicked = ImGui.Checkbox("##" .. settingName, settingValue)
+                        local showName = settingName:gsub("Open", "Show")
                         if clicked then
                             Settings[settingName][toonName] = not Settings[settingName][toonName]
+                            Settings[showName][toonName] = not Settings[showName][toonName]
                             mq.pickle('mimicSettings.lua', Settings)
                             local newFileData, error = loadfile(mq.configDir .. '/' .. 'mimicSettings.lua')
                             if newFileData then
                                 Settings = newFileData()
                             end
-                        end
-                    end
-                else
-                    local previousCursorPos = ImGui.GetCursorPosVec()
-                    ImGui.SetCursorPos(10, 420)
-                    local editLoadoutButton = ImGui.Button("Edit Loadout", 150, 30)
-                    ImGui.SetCursorPos(previousCursorPos)
-                    if editLoadoutButton then
-                        Settings[settingName][toonName] = not Settings[settingName][toonName]
-                        mq.pickle('mimicSettings.lua', Settings)
-                        local newFileData, error = loadfile(mq.configDir .. '/' .. 'mimicSettings.lua')
-                        if newFileData then
-                            Settings = newFileData()
                         end
                     end
                 end
