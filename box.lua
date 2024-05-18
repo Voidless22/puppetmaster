@@ -24,6 +24,6 @@ local function main()
 end
 
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
-dataHandler.UpdateData(mq.TLO.Me.Name())
+dataHandler.InitializeData(mq.TLO.Me.Name())
 boxActor:send(driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
 main()

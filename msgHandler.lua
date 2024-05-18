@@ -13,19 +13,32 @@ function msgHandler.boxMessageHandler(message)
     local msgId = message.content.id
     if msgId == 'Connect' then
         message:send({ id = 'Connect', boxName = mq.TLO.Me.Name() })
-    end
-    if msgId == 'ReadyToGo' then
+    elseif msgId == 'ReadyToGo' then
         ReadyToGo = true
-    end
-    if msgId == 'UpdateData' then
-       -- dataHandler.UpdateData(mq.TLO.Me.Name())
+    elseif msgId == 'UpdateData' then
+        -- dataHandler.UpdateData(mq.TLO.Me.Name())
         message:send({ id = 'UpdatedData', boxName = mq.TLO.Me.Name(), boxData = dataHandler.GetData(mq.TLO.Me.Name()) })
-    end
-    if msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
+    elseif msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmdf('/cast %i', message.content.gem)
-    end
-    if msgId == 'newTarget' and message.content.charName == mq.TLO.Me.Name() then
+    elseif msgId == 'newTarget' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmdf('/target %s', message.content.targetId)
+    elseif message.content.id == 'petFollowUpdate' and message.content.charName == mq.TLO.Me.Name() then
+        dataHandler.boxes[message.content.charName].PetFollow = message.content.PetFollow
+
+        if message.content.PetFollow == true then
+            mq.cmd('/pet follow')
+        end
+        if message.content.PetFollow == false then mq.cmd('/pet guard') end
+        -- Pet Taunt Message
+    elseif message.content.id == 'petTauntUpdate' and message.content.charName == mq.TLO.Me.Name() then
+        if message.content.taunt == true then mq.cmd('/pet taunt on') end
+        if message.content.taunt == false then mq.cmd('/pet taunt off') end
+        -- Pet Attack Message
+    elseif message.content.id == 'petAttack' and message.content.charName == mq.TLO.Me.Name() then
+        mq.cmd('/pet attack')
+    elseif message.content.id == 'petBackOff' and message.content.charName == mq.TLO.Me.Name() then
+        mq.cmd('/pet stop')
+        mq.cmd('/pet back')
     end
 end
 
@@ -61,7 +74,6 @@ function msgHandler.driverMessageHandler(message)
     end
     if msgId == 'UpdatedData' then
         dataHandler.boxes[message.content.boxName] = message.content.boxData
-
     end
 end
 

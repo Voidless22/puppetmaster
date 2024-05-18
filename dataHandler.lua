@@ -50,7 +50,7 @@ local function updateTargetBuffs(boxName)
         for i = 0, #currentBoxIndex.targetBuffs do
             currentBoxIndex.targetBuffs[i] = nil
         end
-    elseif mq.TLO.Target.BuffCount() > 0 and mq.TLO.Target.ID() ~= 0 then
+    elseif mq.TLO.Target.BuffCount() and mq.TLO.Target.ID() ~= 0 then
         for i = 0, targetBuffCount do
             local buffFound = false
             if mq.TLO.Target.Buff(i).SpellID() ~= nil and currentBoxIndex.targetBuffs[i] ~= mq.TLO.Target.Buff(i).SpellID() then
@@ -92,8 +92,31 @@ local function updateXTarget(boxName)
     end
 end
 
+local function updatePet(boxName)
+    local currentBoxIndex = dataHandler.boxes[boxName]
+    -- No Pet
+    if mq.TLO.Me.Pet() == "NO PET" then
+        currentBoxIndex.Pet = "No Pet"
+    end
+    -- Pet Summoned
+    if mq.TLO.Me.Pet() ~= 'NO PET' then
+        currentBoxIndex.Pet = mq.TLO.Spawn(mq.TLO.Me.Pet()).ID()
+        -- in combat
+        if mq.TLO.Me.Pet.Combat() ~= currentBoxIndex.PetInCombat then
+            currentBoxIndex.PetInCombat = mq.TLO.Me.Pet.Combat()
+        end
+        -- Target
+        if mq.TLO.Me.Pet.Target.ID() == 0 or mq.TLO.Me.Pet.Target.Dead() then
+            currentBoxIndex.PetTarget = 'Empty'
+        else
+            currentBoxIndex.PetTarget = mq.TLO.Me.Pet.Target.ID()
+        end
+        -- Taunt
+        currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()
+    end
+end
 
-function dataHandler.UpdateData(boxName)
+function dataHandler.InitializeData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     currentBoxIndex.Level = mq.TLO.Me.Level()
     currentBoxIndex.Class = mq.TLO.Me.Class()
@@ -106,15 +129,26 @@ function dataHandler.UpdateData(boxName)
     if not currentBoxIndex.XTarget then currentBoxIndex.XTarget = {} end
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
-    
+    currentBoxIndex.targetID = mq.TLO.Target.ID()
+    currentBoxIndex.Spellbook = {}
+    currentBoxIndex.CombatAbilities = {}
+    currentBoxIndex.PetFollow = true
+    currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()
+
+end
+
+
+function dataHandler.UpdateData(boxName)
+    local currentBoxIndex = dataHandler.boxes[boxName]
+  
     updateBuffs(boxName)
     currentBoxIndex.targetID = mq.TLO.Target.ID()
     updateTargetBuffs(boxName)
     updateSpellbar(boxName)
     updateGroup(boxName)
     updateXTarget(boxName)
-    currentBoxIndex.Spellbook = {}
-    currentBoxIndex.CombatAbilities = {}
+    updatePet(boxName)
+
 end
 
 return dataHandler
