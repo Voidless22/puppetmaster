@@ -134,13 +134,16 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.CombatAbilities = {}
     currentBoxIndex.PetFollow = true
     currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()
-
+    currentBoxIndex.followMATarget = false
+    currentBoxIndex.chaseToggle = false
+    currentBoxIndex.meleeTarget = false
+    currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
 end
-
 
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
-  
+    currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
+
     updateBuffs(boxName)
     currentBoxIndex.targetID = mq.TLO.Target.ID()
     updateTargetBuffs(boxName)
@@ -148,7 +151,6 @@ function dataHandler.UpdateData(boxName)
     updateGroup(boxName)
     updateXTarget(boxName)
     updatePet(boxName)
-
 end
 
 return dataHandler

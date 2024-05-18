@@ -8,6 +8,7 @@ local targetWindow= require('windows/targetWindow')
 local buffWindow  = require('windows/buffWindow')
 local xtargetWindow = require('windows/xtargetWindow')
 local petWindow     = require('windows.petWindow')
+local dashWindow    = require('windows.dashWindow')
 local gui = {}
 
 local window_flags = 0
@@ -28,7 +29,7 @@ local typeHandlers = {
     Xtar = xtargetWindow.DrawMimicXTargetWindow,
     Target = targetWindow.DrawTargetWindow,
     Pet = petWindow.DrawPetWindow,
-    --["Control Dash"] = mimicControlDash.DrawControlDash,
+    Dash = dashWindow.DrawControlDash,
     Buffs = buffWindow.DrawBuffWindow,
     --Loadout = mimicLoadoutWindow.DrawMimicLoadoutWindow
 }
@@ -75,7 +76,7 @@ function gui.guiLoop()
     OpenAllInstances(Settings.OpenXTarget, Settings.ShowXTarget, "XTarget", 'Xtar', window_flags)
     OpenAllInstances(Settings.OpenTarget, Settings.ShowTarget, "Target", 'Target', window_flags)
     OpenAllInstances(Settings.OpenPet, Settings.ShowPet, "Pet", "Pet", window_flags)
-    OpenAllInstances(Settings.OpenDash, Settings.ShowDash, "Control Dash", "Control Dash", window_flags)
+    OpenAllInstances(Settings.OpenDash, Settings.ShowDash, "Dash", "Dash", window_flags)
     OpenAllInstances(Settings.OpenBuffs, Settings.ShowBuffs, "Buffs", "Buffs",
         bit32.bor(ImGuiWindowFlags.NoTitleBar))
     OpenAllInstances(Settings.OpenLoadout, Settings.ShowLoadout, "Loadout", "Loadout", window_flags)

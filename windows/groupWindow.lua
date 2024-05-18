@@ -1,5 +1,6 @@
 local mq = require('mq')
 local ImGui = require('ImGui')
+local msgHandler = require('msgHandler')
 
 
 local groupWindow = {}
@@ -39,7 +40,7 @@ function groupWindow.DrawGroupWindow(charName, charTable)
                     35)
                 if groupButtons[currentMember] then
                     if charName ~= mq.TLO.Me.Name() then
-                        DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', char = charName },
+                        msgHandler.DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', char = charName },
                             {
                                 id = 'newTarget',
                                 charName = charName,

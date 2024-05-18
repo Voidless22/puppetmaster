@@ -1,9 +1,13 @@
 local mq = require('mq')
+local actors = require('actors')
 local dataHandler = require('dataHandler')
 local msgHandler = {}
 msgHandler.boxes = {}
 msgHandler.driverConnected = false
 local ReadyToGo = false
+
+msgHandler.boxAddress = { mailbox = 'Box', script = 'puppetmaster/box' }
+msgHandler.driverAddress = { mailbox = 'Driver', script = 'puppetmaster' }
 
 function msgHandler.boxReady()
     return ReadyToGo
@@ -39,6 +43,29 @@ function msgHandler.boxMessageHandler(message)
     elseif message.content.id == 'petBackOff' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmd('/pet stop')
         mq.cmd('/pet back')
+    end
+    if message.content.id == 'updateChase' then
+        dataHandler.boxes[message.content.charName].chaseToggle = message.content.chaseAssist
+        -- MA Target Message
+    elseif message.content.id == 'updateFollowMATarget' then
+        dataHandler.boxes[message.content.charName].followMATarget = message.content.followMATarget
+        -- Sit Toggle Message
+    elseif message.content.id == 'switchSitting' and message.content.charName == mq.TLO.Me.Name() then
+        dataHandler.boxes[message.content.charName].Sitting = mq.TLO.Me.Sitting()
+
+        if dataHandler.boxes[message.content.charName].Sitting then
+            mq.cmd('/stand')
+        else
+            mq.cmd('/sit')
+        end
+
+        -- Attack Button Message
+    elseif message.content.id == 'updateMeleeTarget' and message.content.charName == mq.TLO.Me.Name() then
+        dataHandler.boxes[message.content.charName].meleeTarget = message.content.meleeTarget
+        -- Clear Target message
+    elseif message.content.id == 'clearTarget' and message.content.charName == mq.TLO.Me.Name() then
+        print("clearing Target")
+        mq.cmd('/target clear')
     end
 end
 
@@ -76,5 +103,8 @@ function msgHandler.driverMessageHandler(message)
         dataHandler.boxes[message.content.boxName] = message.content.boxData
     end
 end
+
+msgHandler.DriverActor = actors.register('Driver', msgHandler.driverMessageHandler)
+msgHandler.boxActor = actors.register('Box', msgHandler.boxMessageHandler)
 
 return msgHandler

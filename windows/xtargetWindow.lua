@@ -1,5 +1,6 @@
 local mq = require('mq')
 local imgui = require('ImGui')
+local msgHandler = require('msgHandler')
 
 local xtargetWindow = {}
 
@@ -29,7 +30,7 @@ function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
                 ImGui.SetCursorPos(cursorPos)
                 xtargetButtons[currentXtarget] = ImGui.InvisibleButton(mq.TLO.Spawn(charTable.XTarget[currentXtarget]).Name(),128, 29)
                 if xtargetButtons[currentXtarget] then
-                    DriverActor:send({mailbox='box', script='puppetmaster/box', character=charName}, {id ='newTarget', charName = charName, targetId =mq.TLO.Spawn(charTable.XTarget[currentXtarget]).DisplayName()})
+                    msgHandler.DriverActor:send({mailbox='box', script='puppetmaster/box', character=charName}, {id ='newTarget', charName = charName, targetId =mq.TLO.Spawn(charTable.XTarget[currentXtarget]).DisplayName()})
                 end
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 5)
             end

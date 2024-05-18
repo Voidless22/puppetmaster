@@ -2,6 +2,7 @@ local mq = require('mq')
 local imgui = require('ImGui')
 local icons = require('icons')
 local spellbarWnd = {}
+local msgHandler = require('msgHandler')
 
 spellbarWnd.spellbarIds = {}
 spellbarWnd.previousSpellbar = {}
@@ -46,7 +47,7 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 end
 
                 if gemButtons[currentGem] and charName ~= mq.TLO.Me.Name() then
-                    DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', character = charName },
+                    msgHandler.DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', character = charName },
                         { id = 'castSpell', charName = charName, gem = currentGem })
                 end
             end

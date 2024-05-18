@@ -1,5 +1,6 @@
 local mq = require('mq')
 local ImGui = require('ImGui')
+local msgHandler = require('msgHandler')
 
 local petWindow = {}
 
@@ -49,19 +50,19 @@ function petWindow.DrawPetWindow(charName, charTable)
 
     if followButton then
         charTable.PetFollow = not charTable.PetFollow
-        DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName}, {id = 'petFollowUpdate', charName = charName, PetFollow=charTable.PetFollow})
+        msgHandler.DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName}, {id = 'petFollowUpdate', charName = charName, PetFollow=charTable.PetFollow})
 
     end
     if tauntButton then
         charTable.PetTaunt = not charTable.PetTaunt
-        DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName}, {id = 'petTauntUpdate', charName = charName, taunt=charTable.PetTaunt})
+        msgHandler.DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName}, {id = 'petTauntUpdate', charName = charName, taunt=charTable.PetTaunt})
     end
 
     if attackButton then
-        DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName}, {id='petAttack', charName = charName})
+        msgHandler.DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName}, {id='petAttack', charName = charName})
     end
     if backOffButton then
-        DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName},{id='petBackOff',charName = charName})
+        msgHandler.DriverActor:send({mailbox='Box', script='puppetmaster/box', character=charName},{id='petBackOff',charName = charName})
     end
 end
 
