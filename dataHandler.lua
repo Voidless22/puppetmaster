@@ -143,12 +143,15 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.meleeTarget = false
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
     currentBoxIndex.spellTable = {}
+    currentBoxIndex.isCasting = mq.TLO.Me.Casting()
+    currentBoxIndex.lastCastGem = 0
 end
 
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
-
+    currentBoxIndex.isCasting = mq.TLO.Me.Casting()
+    
     updateBuffs(boxName)
     currentBoxIndex.targetID = mq.TLO.Target.ID()
     updateTargetBuffs(boxName)

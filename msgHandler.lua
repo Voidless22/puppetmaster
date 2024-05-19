@@ -24,6 +24,7 @@ function msgHandler.boxMessageHandler(message)
         message:send({ id = 'UpdatedData', boxName = mq.TLO.Me.Name(), boxData = dataHandler.GetData(mq.TLO.Me.Name()) })
     elseif msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmdf('/cast %i', message.content.gem)
+        dataHandler.boxes[message.content.charName].lastCastGem = message.content.gem
     elseif msgId == 'newTarget' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmdf('/target %s', message.content.targetId)
     elseif message.content.id == 'petFollowUpdate' and message.content.charName == mq.TLO.Me.Name() then

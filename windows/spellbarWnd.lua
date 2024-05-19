@@ -9,30 +9,30 @@ spellbarWnd.previousSpellbar = {}
 
 function spellbarWnd.DrawSpellbar(charName, charTable)
     local gemButtons = {}
-
+    local animSpellIcons = mq.FindTextureAnimation('A_SpellIcons')
     local spellIds = charTable.Spellbar
+    local cursorPos
+    local screenCursorPos
     ImGui.SetWindowSize("Spellbar-" .. charName, 40, 360)
     ImGui.SetCursorPos(4, 4)
-    local animSpellIcons = mq.FindTextureAnimation('A_SpellIcons')
 
-    if spellIds ~= nil then
+    if spellIds then
         ImGui.SetWindowSize('Spellbar-' .. charName, 40, ((#spellIds + 2) * 36))
         for currentGem = 1, #spellIds do
-            if spellIds[currentGem] == 'Empty' or spellIds[currentGem] == nil then
-                local curx = ImGui.GetCursorPosX()
-                local cury = ImGui.GetCursorPosY()
-                ImGui.SetCursorPos(curx, cury + 40)
-            elseif spellIds[currentGem] ~= 'Empty' and spellIds[currentGem] ~= nil then
-                local cursorPos = ImGui.GetCursorPosVec()
-                local screenCursorPos = ImGui.GetCursorScreenPosVec()
+            if spellIds[currentGem] == 0 then
+                cursorPos = ImGui.GetCursorPosVec()
+                ImGui.SetCursorPos(cursorPos.x, cursorPos.y + 40)
+            elseif spellIds[currentGem] ~= 0  then
+                cursorPos = ImGui.GetCursorPosVec()
+                screenCursorPos = ImGui.GetCursorScreenPosVec()
 
-                if charTable['isCasting'] ~= nil and charTable['isCasting'] == mq.TLO.Spell(spellIds[currentGem]).Name() then
+                if charTable.isCasting and charTable.lastCastGem == currentGem then
                     local drawlist = ImGui.GetWindowDrawList()
                     local x = screenCursorPos.x + 34
                     local y = screenCursorPos.y + 34
                     local color = ImGui.GetColorU32(ImVec4(255, 0, 0, 255))
                     drawlist:AddRectFilled(screenCursorPos, ImVec2(x, y), color, 5)
-                elseif charTable['isCasting'] ~= mq.TLO.Spell(spellIds[currentGem]).Name() then
+                else
                     animSpellIcons:SetTextureCell(mq.TLO.Spell(spellIds[currentGem]).SpellIcon())
                     ImGui.DrawTextureAnimation(animSpellIcons, 32, 32)
                 end
@@ -48,7 +48,7 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 end
 
                 if gemButtons[currentGem] and charName ~= mq.TLO.Me.Name() then
-                    msgHandler.DriverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', character = charName },
+                    msgHandler.DriverActor:send(msgHandler.boxAddress,
                         { id = 'castSpell', charName = charName, gem = currentGem })
                 end
             end
