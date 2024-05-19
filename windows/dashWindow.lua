@@ -6,7 +6,7 @@ local chaseToggle
 
 local sittingText
 function dashWindow.DrawControlDash(charName, charTable)
-    ImGui.SetWindowSize('Dash-' .. charName, 128, 150)
+    ImGui.SetWindowSize('Dash-' .. charName, 128, 150,ImGuiCond.FirstUseEver)
     -- Settings Button
     ImGui.SetCursorPos(4, 4)
     ImGui.PushStyleColor(ImGuiCol.Text, 255, 255, 255, 255)

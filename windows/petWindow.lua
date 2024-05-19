@@ -8,7 +8,7 @@ local tauntButton
 function petWindow.DrawPetWindow(charName, charTable)
     local petTargetSpawn = mq.TLO.Spawn(charTable.PetTarget)
     local petSpawn = mq.TLO.Spawn(charName).Pet
-    ImGui.SetWindowSize("Pet-" .. charName, 150, 180)
+    ImGui.SetWindowSize("Pet-" .. charName, 150, 180,ImGuiCond.FirstUseEver)
     ImGui.SetCursorPos(4, 5)
     if petSpawn() == "NO PET" then
         Settings.OpenPet[charName] = false

@@ -6,7 +6,7 @@ local xtargetWindow = {}
 
 
 function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
-    ImGui.SetWindowSize("XTarget-" .. charName, 128, 256)
+    ImGui.SetWindowSize("XTarget-" .. charName, 128, 256,ImGuiCond.FirstUseEver)
     local xtargetRatio = {}
     local xtargetButtons = {}
     local xtargetManaRatio = {}

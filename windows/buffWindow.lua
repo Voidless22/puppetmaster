@@ -6,7 +6,7 @@ local buffWindow = {}
 local animSpellIcons = mq.FindTextureAnimation('A_SpellIcons')
 
 function buffWindow.DrawBuffWindow(charName, charTable)
-    ImGui.SetWindowSize("Buffs-" .. charName, 150, 150, ImGuiCond.Appearing)
+    ImGui.SetWindowSize("Buffs-" .. charName, 150, 150, ImGuiCond.FirstUseEver)
     ImGui.Text('Buffs: %s', charName)
     local buffNames = charTable.Buffs
     local windowWidth = ImGui.GetWindowSizeVec().x

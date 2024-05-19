@@ -13,7 +13,7 @@ function targetWindow.DrawTargetWindow(charName, charTable)
     local targetHPRatio
     local windowWidth = ImGui.GetWindowSizeVec().x
     local columnCount = math.floor(windowWidth / 32)
-    ImGui.SetWindowSize("Target-" .. charName, 140, 256)
+    ImGui.SetWindowSize("Target-" .. charName, 140, 256,ImGuiCond.FirstUseEver)
     ImGui.SetCursorPos(4, 0)
     ImGui.Text("%s's Target", charName)
     ImGui.SetCursorPos(4, 20)

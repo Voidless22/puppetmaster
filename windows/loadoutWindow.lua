@@ -164,7 +164,7 @@ end
 
 function loadoutWindow.DrawLoadoutWindow(charName, charTable)
     if modifyingGem[charName] == nil then modifyingGem[charName] = { gem = 1, id = nil } end
-    ImGui.SetWindowSize("Loadout-" .. charName, 600, 380)
+    ImGui.SetWindowSize("Loadout-" .. charName, 600, 380,ImGuiCond.FirstUseEver)
     if ImGui.BeginTabBar("##loadoutSections") then
         for i = 1, #loadoutWindow.loadoutSections do
             if ImGui.BeginTabItem(loadoutWindow.loadoutSections[i]) then

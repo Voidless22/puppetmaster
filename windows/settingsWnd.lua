@@ -41,7 +41,7 @@ end
 
 function settingsWnd.DrawSettingsWindow()
     local settingsPath = 'mimicSettings.lua'
-    ImGui.SetWindowSize('Settings', 500, 500)
+    ImGui.SetWindowSize('Settings', 500, 500,ImGuiCond.FirstUseEver)
     settingsWnd.GetSections()
     settingsWnd.sectionHandler()
 

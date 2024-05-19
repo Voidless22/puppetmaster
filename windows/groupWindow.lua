@@ -13,7 +13,7 @@ function groupWindow.DrawGroupWindow(charName, charTable)
     local GrpHPRatio = {}
     local GrpManaRatio = {}
 
-    ImGui.SetWindowSize("Group-" .. charName, 128, 325)
+    ImGui.SetWindowSize("Group-" .. charName, 128, 325,ImGuiCond.FirstUseEver)
     local groupButtons = {}
     ImGui.SetCursorPos(15, 1)
     ImGui.Text("%s's Group", charName)
