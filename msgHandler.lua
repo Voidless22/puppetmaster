@@ -44,10 +44,10 @@ function msgHandler.boxMessageHandler(message)
         mq.cmd('/pet stop')
         mq.cmd('/pet back')
     end
-    if message.content.id == 'updateChase' then
+    if message.content.id == 'updateChase' and message.content.charName == mq.TLO.Me.Name() and mq.TLO.Group.MainAssist() then
         dataHandler.boxes[message.content.charName].chaseToggle = message.content.chaseAssist
         -- MA Target Message
-    elseif message.content.id == 'updateFollowMATarget' then
+    elseif message.content.id == 'updateFollowMATarget' and message.content.charName == mq.TLO.Me.Name() and mq.TLO.Group.MainAssist() then
         dataHandler.boxes[message.content.charName].followMATarget = message.content.followMATarget
         -- Sit Toggle Message
     elseif message.content.id == 'switchSitting' and message.content.charName == mq.TLO.Me.Name() then
@@ -60,7 +60,7 @@ function msgHandler.boxMessageHandler(message)
         end
 
         -- Attack Button Message
-    elseif message.content.id == 'updateMeleeTarget' and message.content.charName == mq.TLO.Me.Name() then
+    elseif message.content.id == 'updateMeleeTarget' and message.content.charName == mq.TLO.Me.Name()  then
         dataHandler.boxes[message.content.charName].meleeTarget = message.content.meleeTarget
         -- Clear Target message
     elseif message.content.id == 'clearTarget' and message.content.charName == mq.TLO.Me.Name() then
