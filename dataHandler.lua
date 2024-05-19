@@ -122,12 +122,13 @@ end
 
 function dataHandler.InitializeData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
-    currentBoxIndex.Level = mq.TLO.Me.Level()
-    currentBoxIndex.Class = mq.TLO.Me.Class()
-    currentBoxIndex.Race = mq.TLO.Me.Race()
+
     currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
     currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
     currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
+    currentBoxIndex.Level = mq.TLO.Me.Level()
+    currentBoxIndex.Class = mq.TLO.Me.Class()
+    currentBoxIndex.Race = mq.TLO.Me.Race()
     if not currentBoxIndex.targetBuffs then currentBoxIndex.targetBuffs = {} end
     if not currentBoxIndex.Buffs then currentBoxIndex.Buffs = {} end
     if not currentBoxIndex.XTarget then currentBoxIndex.XTarget = {} end
@@ -145,13 +146,17 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.spellTable = {}
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()
     currentBoxIndex.lastCastGem = 0
+    currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
 end
 
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()
-    
+    currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
+    currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
+    currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
+    currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
     updateBuffs(boxName)
     currentBoxIndex.targetID = mq.TLO.Target.ID()
     updateTargetBuffs(boxName)

@@ -90,7 +90,7 @@ function msgHandler.driverMessageHandler(message)
         elseif settingsFile then
             local fileData = settingsFile()
             for settingName, value in pairs(Settings) do
-                if fileData[settingName][boxName] == nil then
+                if fileData[settingName] == nil or fileData[settingName][boxName] == nil then
                     Settings[settingName][boxName] = true
                     mq.pickle('PMSettings.lua', Settings)
                 else

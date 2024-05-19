@@ -10,6 +10,7 @@ local xtargetWindow = require('windows/xtargetWindow')
 local petWindow     = require('windows.petWindow')
 local loadoutWindow = require('windows/loadoutWindow')
 local dashWindow    = require('windows.dashWindow')
+local playerWindow  = require('windows/playerWindow')
 local gui = {}
 
 local window_flags = 0
@@ -33,6 +34,7 @@ local typeHandlers = {
     Dash = dashWindow.DrawControlDash,
     Buffs = buffWindow.DrawBuffWindow,
     --Loadout = loadoutWindow.DrawLoadoutWindow
+    Player = playerWindow.DrawPlayerWindow
 }
 
 local function OpenAllInstances(open, show, name, type, windowflags)
@@ -81,6 +83,7 @@ function gui.guiLoop()
     OpenAllInstances(Settings.OpenBuffs, Settings.ShowBuffs, "Buffs", "Buffs",
         bit32.bor(ImGuiWindowFlags.NoTitleBar))
     OpenAllInstances(Settings.OpenLoadout, Settings.ShowLoadout, "Loadout", "Loadout", window_flags)
+    OpenAllInstances(Settings.OpenPlayer, Settings.ShowPlayer, "Player", "Player", window_flags)
 
     if OpenSettings then
         OpenSettings, ShowSettings = ImGui.Begin('Settings', OpenSettings)

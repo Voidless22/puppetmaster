@@ -23,6 +23,8 @@ Settings = {
     ShowBuffs = {},
     OpenLoadout = {},
     ShowLoadout = {},
+    OpenPlayer = {},
+    ShowPlayer= {},
 
 }
 OpenSettings = false
@@ -31,7 +33,6 @@ ShowSettings = false
 
 msgHandler.DriverActor:send(msgHandler.boxAddress, { id = 'Connect' })
 
-mq.imgui.init('Puppetmaster', gui.guiLoop)
 
 local function updateBoxData()
     msgHandler.DriverActor:send(msgHandler.boxAddress, { id = 'UpdateData' })
@@ -59,4 +60,6 @@ end
 dataHandler.InitializeData(mq.TLO.Me.Name())
 mq.bind('/pmsettings', function() OpenSettings = not OpenSettings end)
 mq.bind('/updatedata', updateBoxData)
+mq.imgui.init('Puppetmaster', gui.guiLoop)
+
 main()
