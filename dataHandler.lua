@@ -70,7 +70,11 @@ end
 local function updateSpellbar(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     for gem = 1, mq.TLO.Me.NumGems() do
-        currentBoxIndex.Spellbar[gem] = mq.TLO.Me.Gem(gem).ID()
+        if mq.TLO.Me.Gem(gem).ID() == nil then
+            currentBoxIndex.Spellbar[gem] = 0
+        else
+            currentBoxIndex.Spellbar[gem] = mq.TLO.Me.Gem(gem).ID()
+        end
     end
 end
 local function updateGroup(boxName)

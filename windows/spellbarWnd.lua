@@ -16,6 +16,7 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
     local animSpellIcons = mq.FindTextureAnimation('A_SpellIcons')
 
     if spellIds ~= nil then
+        ImGui.SetWindowSize('Spellbar-' .. charName, 40, ((#spellIds + 2) * 36))
         for currentGem = 1, #spellIds do
             if spellIds[currentGem] == 'Empty' or spellIds[currentGem] == nil then
                 local curx = ImGui.GetCursorPosX()
@@ -36,12 +37,12 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                     ImGui.DrawTextureAnimation(animSpellIcons, 32, 32)
                 end
                 ImGui.SetCursorPos(cursorPos)
-                gemButtons[currentGem] = ImGui.InvisibleButton(mq.TLO.Spell(spellIds[currentGem]).Name(), 32, 32)
+                gemButtons[currentGem] = ImGui.InvisibleButton((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"), 32, 32)
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
 
                 if ImGui.IsItemHovered() then
                     if ImGui.BeginTooltip() then
-                        ImGui.Text(mq.TLO.Spell(spellIds[currentGem]).Name())
+                        ImGui.Text((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"))
                         ImGui.EndTooltip()
                     end
                 end
