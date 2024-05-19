@@ -66,6 +66,9 @@ function msgHandler.boxMessageHandler(message)
     elseif message.content.id == 'clearTarget' and message.content.charName == mq.TLO.Me.Name() then
         print("clearing Target")
         mq.cmd('/target clear')
+    elseif message.content.id == 'updateSpellbar' and message.content.charName == mq.TLO.Me.Name() then
+        print(message.content.gem, message.content.spellId)
+        mq.cmdf('/memspell %i "%s"', message.content.gem, message.content.spellId)
     end
 end
 

@@ -7,12 +7,69 @@ local boxName = mq.TLO.Me.Name()
 
 local driverAddress = { mailbox = 'Driver', script = 'puppetmaster' }
 
-local dataTable 
+local dataTable
 
 while not msgHandler.boxReady() do
     print('attempting to connect')
     msgHandler.boxActor:send(driverAddress, { id = 'Connect', boxName = boxName })
     mq.delay(100)
+end
+
+local SpellSorter = function(a, b)
+    if a[1] < b[1] then
+        return false
+    elseif b[1] < a[1] then
+        return true
+    else
+        return false
+    end
+end
+local previousSpellTable = { categories = {} }
+local currentSpellTable = { categories = {} }
+local function buildSpellTable()
+    local sendUpdate = false
+    for i = 1, 720 do
+        if mq.TLO.Me.Book(i).ID() ~= nil then
+            local spellID = mq.TLO.Me.Book(i).ID()
+            local spellCategory = mq.TLO.Spell(spellID).Category()
+            local spellSubcategory = mq.TLO.Spell(spellID).Subcategory()
+            if not previousSpellTable[spellCategory] then
+                previousSpellTable[spellCategory] = { subcategories = {} }
+                table.insert(previousSpellTable.categories, spellCategory)
+            end
+            if not previousSpellTable[spellCategory][spellSubcategory] then
+                previousSpellTable[spellCategory][spellSubcategory] = {}
+                table.insert(previousSpellTable[spellCategory].subcategories, spellSubcategory)
+            end
+            table.insert(previousSpellTable[spellCategory][spellSubcategory],
+                { mq.TLO.Spell(spellID).Level(), mq.TLO.Spell(spellID).Name() })
+            sendUpdate = true
+        end
+    end
+    if sendUpdate then
+        table.sort(previousSpellTable.categories)
+        for category, subcategories in pairs(previousSpellTable) do
+            if category ~= 'categories' then
+                table.sort(previousSpellTable[category].subcategories)
+                for subcategory, subcatspells in pairs(subcategories) do
+                    if subcategory ~= 'subcategories' then
+                        table.sort(subcatspells, SpellSorter)
+                    end
+                end
+            end
+        end
+
+        for _, category in ipairs(previousSpellTable['categories']) do
+            for _, subcategory in ipairs(previousSpellTable[category]['subcategories']) do
+                for _, spell in ipairs(previousSpellTable[category][subcategory]) do
+                    printf(' %s: Spell: %s Level: %i in Category: %s under Subcategory: %s', mq.TLO.Me.Name(), spell[2],
+                        spell[1], category, subcategory)
+                end
+            end
+        end
+        msgHandler.boxActor:send(msgHandler.boxAddress,
+            { id = 'updateSpellTable', charName = mq.TLO.Me.Name(), spellTable = previousSpellTable })
+    end
 end
 local function meleeRoutine()
     if mq.TLO.Target() ~= nil and mq.TLO.Target.ID() ~= mq.TLO.Me.ID() then
@@ -63,7 +120,6 @@ if mq.TLO.Me.Combat() and not dataTable.meleeTarget then
 end
 
 
-
 local function main()
     while Running do
         if dataTable.chaseToggle then doChase() end
@@ -78,7 +134,8 @@ end
 
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
 dataHandler.InitializeData(mq.TLO.Me.Name())
-dataTable =  dataHandler.boxes[mq.TLO.Me.Name()]
+dataTable = dataHandler.boxes[mq.TLO.Me.Name()]
+buildSpellTable()
 
 msgHandler.boxActor:send(driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
 main()

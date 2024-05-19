@@ -96,7 +96,7 @@ local function updatePet(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     -- No Pet
     if mq.TLO.Me.Pet() == "NO PET" then
-        currentBoxIndex.Pet = "No Pet"
+        currentBoxIndex.Pet = "NO PET"
     end
     -- Pet Summoned
     if mq.TLO.Me.Pet() ~= 'NO PET' then
@@ -138,6 +138,7 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.chaseToggle = false
     currentBoxIndex.meleeTarget = false
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
+    currentBoxIndex.spellTable = {}
 end
 
 function dataHandler.UpdateData(boxName)

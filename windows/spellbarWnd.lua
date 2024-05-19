@@ -56,7 +56,7 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
     ImGui.PushStyleColor(ImGuiCol.Button, 0.0, 0.0, 0.0, 0.0)
     local loadoutButton = ImGui.Button(icons.MD_BORDER_COLOR, 32, 32)
     if loadoutButton then
-        Settings['OpenMimicLoadoutWindow'][charName] = not Settings['OpenMimicLoadoutWindow'][charName]
+        Settings.OpenLoadout[charName] = not Settings.OpenLoadout[charName]
     end
     ImGui.PopStyleColor(1)
 end

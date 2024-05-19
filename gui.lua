@@ -8,6 +8,7 @@ local targetWindow= require('windows/targetWindow')
 local buffWindow  = require('windows/buffWindow')
 local xtargetWindow = require('windows/xtargetWindow')
 local petWindow     = require('windows.petWindow')
+local loadoutWindow = require('windows/loadoutWindow')
 local dashWindow    = require('windows.dashWindow')
 local gui = {}
 
@@ -31,7 +32,7 @@ local typeHandlers = {
     Pet = petWindow.DrawPetWindow,
     Dash = dashWindow.DrawControlDash,
     Buffs = buffWindow.DrawBuffWindow,
-    --Loadout = mimicLoadoutWindow.DrawMimicLoadoutWindow
+    --Loadout = loadoutWindow.DrawLoadoutWindow
 }
 
 local function OpenAllInstances(open, show, name, type, windowflags)

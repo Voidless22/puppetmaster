@@ -41,6 +41,8 @@ end
 local function main()
     while running do
         mq.delay(100)
+        dataHandler.UpdateData(mq.TLO.Me.Name())
+
     end
 end
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
