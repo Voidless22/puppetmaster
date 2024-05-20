@@ -33,7 +33,7 @@ local typeHandlers = {
     Pet = petWindow.DrawPetWindow,
     Dash = dashWindow.DrawControlDash,
     Buffs = buffWindow.DrawBuffWindow,
-    --Loadout = loadoutWindow.DrawLoadoutWindow
+    Loadout = loadoutWindow.DrawLoadoutWindow,
     Player = playerWindow.DrawPlayerWindow
 }
 

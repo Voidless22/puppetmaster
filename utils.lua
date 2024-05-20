@@ -1,8 +1,7 @@
 local mq = require('mq')
-local msgHandler = require('msgHandler')
-local dataHandler = require('dataHandler')
+--local dataHandler = require('dataHandler')
 local utils = {}
-local dataTable = dataHandler.boxes[mq.TLO.Me.Name()]
+--local dataTable = dataHandler.boxes[mq.TLO.Me.Name()]
 
 local function SpellSorter(a, b)
     if a[1] < b[1] then
@@ -14,52 +13,27 @@ local function SpellSorter(a, b)
     end
 end
 
-local previousSpellTable = { categories = {} }
-local currentSpellTable = { categories = {} }
+local spellTable = {}
+local spellCategories = {}
+local spellSubCategories = {}
+
 function utils.buildSpellTable()
-    local sendUpdate = false
     for i = 1, 720 do
-        if mq.TLO.Me.Book(i).ID() ~= nil then
+        if mq.TLO.Me.Book(i).ID() then
             local spellID = mq.TLO.Me.Book(i).ID()
             local spellCategory = mq.TLO.Spell(spellID).Category()
             local spellSubcategory = mq.TLO.Spell(spellID).Subcategory()
-            if not previousSpellTable[spellCategory] then
-                previousSpellTable[spellCategory] = { subcategories = {} }
-                table.insert(previousSpellTable.categories, spellCategory)
-            end
-            if not previousSpellTable[spellCategory][spellSubcategory] then
-                previousSpellTable[spellCategory][spellSubcategory] = {}
-                table.insert(previousSpellTable[spellCategory].subcategories, spellSubcategory)
-            end
-            table.insert(previousSpellTable[spellCategory][spellSubcategory],
-                { mq.TLO.Spell(spellID).Level(), mq.TLO.Spell(spellID).Name() })
-            sendUpdate = true
-        end
-    end
-    if sendUpdate then
-        table.sort(previousSpellTable.categories)
-        for category, subcategories in pairs(previousSpellTable) do
-            if category ~= 'categories' then
-                table.sort(previousSpellTable[category].subcategories)
-                for subcategory, subcatspells in pairs(subcategories) do
-                    if subcategory ~= 'subcategories' then
-                        table.sort(subcatspells, SpellSorter)
-                    end
-                end
-            end
-        end
+            local spellLevel = mq.TLO.Spell(spellID).Level()
+            local spellName = mq.TLO.Spell(spellID).Name()
 
-        for _, category in ipairs(previousSpellTable['categories']) do
-            for _, subcategory in ipairs(previousSpellTable[category]['subcategories']) do
-                for _, spell in ipairs(previousSpellTable[category][subcategory]) do
-                    printf(' %s: Spell: %s Level: %i in Category: %s under Subcategory: %s', mq.TLO.Me.Name(), spell[2],
-                        spell[1], category, subcategory)
-                end
-            end
+            table.insert(spellTable, {category=spellCategory, subcategory=spellSubcategory, level = spellLevel, name=spellName, id=spellID})
         end
-        msgHandler.boxActor:send(msgHandler.boxAddress,
-            { id = 'updateSpellTable', charName = mq.TLO.Me.Name(), spellTable = previousSpellTable })
     end
+    for index, value in ipairs(spellTable) do
+        local spellEntry = spellTable[index]
+        printf('Index: %i, Category: %s Subcategory: %s Level: %i Name:%s ID:%i',index,spellEntry.category, spellEntry.subcategory, spellEntry.level, spellEntry.name, spellEntry.id)
+    end
+    return spellTable
 end
 
 function utils.mirrorTarget()

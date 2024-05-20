@@ -1,5 +1,6 @@
 local mq = require('mq')
 local actors = require('actors')
+local utils  = require('utils')
 
 local dataHandler = {}
 
@@ -135,7 +136,7 @@ function dataHandler.InitializeData(boxName)
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
     currentBoxIndex.targetID = mq.TLO.Target.ID()
-    currentBoxIndex.Spellbook = {}
+    currentBoxIndex.Spellbook = utils.buildSpellTable()
     currentBoxIndex.CombatAbilities = {}
     currentBoxIndex.PetFollow = true
     currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()
@@ -143,7 +144,6 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.chaseToggle = false
     currentBoxIndex.meleeTarget = false
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
-    currentBoxIndex.spellTable = {}
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()
     currentBoxIndex.lastCastGem = 0
     currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
