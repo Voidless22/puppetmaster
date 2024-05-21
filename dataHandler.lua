@@ -102,10 +102,20 @@ local function updateSpellbar(boxName)
     end
 end
 local function updateGroup(boxName)
+    local foundSelf = false
     local currentBoxIndex = dataHandler.boxes[boxName]
-    for member = 0, mq.TLO.Me.GroupSize() do
+    for member = 1, mq.TLO.Me.GroupSize() do
         currentBoxIndex.Group[member] = mq.TLO.Group.Member(member).ID()
     end
+    for index, value in ipairs(currentBoxIndex.Group) do
+        if value == mq.TLO.Me.ID() then
+            foundSelf = true
+        end
+    end
+    if not foundSelf then
+        table.insert(currentBoxIndex.Group, mq.TLO.Me.ID())
+    end
+
 end
 
 local function updateXTarget(boxName)
