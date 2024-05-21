@@ -13,8 +13,8 @@ function petWindow.DrawPetWindow(charName, charTable)
     if petSpawn() == "NO PET" then
         Settings.OpenPet[charName] = false
     end
-    if petSpawn() ~= "NO PET" then
-        PetHP = petSpawn.PctHPs() / 100 or 0
+    if petSpawn() ~= "NO PET" and petSpawn() then
+        PetHP = (petSpawn.PctHPs() / 100) or 0
         ImGui.Text(charName .. ": " .. petSpawn.CleanName())
         ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
         ImGui.ProgressBar(PetHP, -1, 15)

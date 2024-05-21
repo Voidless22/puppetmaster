@@ -18,7 +18,7 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
 
     if spellIds then
         -- Set the spellbar size to our max Gem count, plus room for the loadout button
-        ImGui.SetWindowSize('Spellbar-' .. charName, 40, ((#spellIds + 2) * 36))
+        ImGui.SetWindowSize('Spellbar-' .. charName, 40, ((#charTable.Spellbar + 2) * 36))
 
         for currentGem = 1, #spellIds do
             -- if we don't have a spell in the gem, move to the next gem spot and leave it empty
