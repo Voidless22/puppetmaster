@@ -1,14 +1,37 @@
 local mq = require('mq')
 local actors = require('actors')
-local utils  = require('utils')
 
 local dataHandler = {}
 
 dataHandler.boxes = {}
 
+local spellTable = {}
+local spellCategories = {}
+local spellSubCategories = {}
+
+local function buildSpellTable()
+    for i = 1, 720 do
+        if mq.TLO.Me.Book(i).ID() then
+            local spellID = mq.TLO.Me.Book(i).ID()
+            local spellCategory = mq.TLO.Spell(spellID).Category()
+            local spellSubcategory = mq.TLO.Spell(spellID).Subcategory()
+            local spellLevel = mq.TLO.Spell(spellID).Level()
+            local spellName = mq.TLO.Spell(spellID).Name()
+
+            table.insert(spellTable, {category=spellCategory, subcategory=spellSubcategory, level = spellLevel, name=spellName, id=spellID})
+        end
+    end
+    for index, value in ipairs(spellTable) do
+        local spellEntry = spellTable[index]
+        printf('Index: %i, Category: %s Subcategory: %s Level: %i Name:%s ID:%i',index,spellEntry.category, spellEntry.subcategory, spellEntry.level, spellEntry.name, spellEntry.id)
+    end
+    return spellTable
+end
+
 function dataHandler.AddNewCharacter(charName)
     if not dataHandler.boxes[charName] then
         dataHandler.boxes[charName] = {}
+
         printf('\agDataHandler: \awEntry created in Character Data table: \at%s', charName)
     else
         printf('\agDataHandler: \arCharacter Data Entry creation attempted, but already exists.')
@@ -136,7 +159,7 @@ function dataHandler.InitializeData(boxName)
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
     currentBoxIndex.targetID = mq.TLO.Target.ID()
-    currentBoxIndex.Spellbook = utils.buildSpellTable()
+    currentBoxIndex.Spellbook = buildSpellTable()
     currentBoxIndex.CombatAbilities = {}
     currentBoxIndex.PetFollow = true
     currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()

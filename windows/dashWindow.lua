@@ -1,6 +1,7 @@
 local mq = require('mq')
 local ImGui = require('ImGui')
 local msgHandler = require('msgHandler')
+local utils = require('utils')
 local dashWindow = {}
 local chaseToggle
 
@@ -57,16 +58,16 @@ function dashWindow.DrawControlDash(charName, charTable)
             charTable.followMATarget = false
         end
         charTable.followMATarget = not charTable.followMATarget
-        msgHandler.DriverActor:send(msgHandler.boxAddress,
+        utils.driverActor:send(msgHandler.boxAddress,
             { id = 'updateFollowMATarget', charName = charName, followMATarget = charTable.followMATarget })
     end
     if clearTargetButton then
-        msgHandler.DriverActor:send(msgHandler.boxAddress,
+        utils.driverActor:send(msgHandler.boxAddress,
             { id = 'clearTarget', charName = charName })
     end
     if attackButton then
         charTable.meleeTarget = not charTable.meleeTarget
-        msgHandler.DriverActor:send(msgHandler.boxAddress,
+        utils.driverActor:send(msgHandler.boxAddress,
             { id = 'updateMeleeTarget', charName = charName, meleeTarget = charTable.meleeTarget })
     end
     if chaseToggleButton then
@@ -74,11 +75,11 @@ function dashWindow.DrawControlDash(charName, charTable)
             charTable.chaseToggle = false
         end
         charTable.chaseToggle = not charTable.chaseToggle
-        msgHandler.DriverActor:send(msgHandler.boxAddress,
+        utils.driverActor:send(msgHandler.boxAddress,
             { id = 'updateChase', charName = charName, chaseAssist = charTable.chaseToggle })
     end
     if sitButton then
-        msgHandler.DriverActor:send(msgHandler.boxAddress,
+        utils.driverActor:send(msgHandler.boxAddress,
             { id = 'switchSitting', charName = charName })
     end
 end

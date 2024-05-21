@@ -1,6 +1,7 @@
 local mq = require('mq')
 local ImGui = require('ImGui')
 local msgHandler = require('msgHandler')
+local utils = require('utils')
 local modifyingGem = {}
 local gemButtons = {}
 local gemLoc = {}
@@ -120,7 +121,7 @@ function loadoutWindow.DrawSpellSelect(charName, charTable)
                         currentSpell[charName] = value.name
                         if mq.TLO.Spell(modifyingGem[charName].id).Name() ~= currentSpell[charName] then
                             modifyingGem[charName].id = mq.TLO.Spell(currentSpell[charName]).Name()
-                            msgHandler.DriverActor:send(msgHandler.boxAddress,
+                            utils.driverActor:send(msgHandler.boxAddress,
                                 {
                                     id = 'updateSpellbar',
                                     charName = charName,

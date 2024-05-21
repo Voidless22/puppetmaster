@@ -91,7 +91,7 @@ function msgHandler.driverMessageHandler(message)
             local fileData = settingsFile()
             for settingName, value in pairs(Settings) do
                 if fileData[settingName] == nil or fileData[settingName][boxName] == nil then
-                    Settings[settingName][boxName] = true
+                    Settings[settingName][boxName] = false
                     mq.pickle('PMSettings.lua', Settings)
                 else
                     Settings[settingName][boxName] = fileData[settingName][boxName]
@@ -108,7 +108,5 @@ function msgHandler.driverMessageHandler(message)
     end
 end
 
-msgHandler.DriverActor = actors.register('Driver', msgHandler.driverMessageHandler)
-msgHandler.boxActor = actors.register('Box', msgHandler.boxMessageHandler)
 
 return msgHandler

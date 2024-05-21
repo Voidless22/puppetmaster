@@ -2,6 +2,7 @@ local mq = require('mq')
 local imgui = require('ImGui')
 local icons = require('icons')
 local spellbarWnd = {}
+local utils = require('utils')
 local msgHandler = require('msgHandler')
 
 spellbarWnd.spellbarIds = {}
@@ -54,7 +55,7 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 end
                 -- On Gem Clicked
                 if gemButtons[currentGem] and charName ~= mq.TLO.Me.Name() then
-                    msgHandler.DriverActor:send(msgHandler.boxAddress,
+                    utils.driverActor:send(msgHandler.boxAddress,
                         { id = 'castSpell', charName = charName, gem = currentGem })
                 end
             end

@@ -11,7 +11,7 @@ local dataTable
 
 while not msgHandler.boxReady() do
     print('attempting to connect')
-    msgHandler.boxActor:send(msgHandler.driverAddress, { id = 'Connect', boxName = boxName })
+    utils.boxActor:send(msgHandler.driverAddress, { id = 'Connect', boxName = boxName })
     mq.delay(100)
 end
 
@@ -25,7 +25,7 @@ local function main()
         end
         mq.delay(10)
         dataHandler.UpdateData(mq.TLO.Me.Name())
-        msgHandler.boxActor:send(msgHandler.driverAddress,
+        utils.boxActor:send(msgHandler.driverAddress,
             { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
     end
 end
@@ -34,5 +34,5 @@ dataHandler.AddNewCharacter(mq.TLO.Me.Name())
 dataHandler.InitializeData(mq.TLO.Me.Name())
 dataTable = dataHandler.boxes[mq.TLO.Me.Name()]
 
-msgHandler.boxActor:send(msgHandler.driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
+utils.boxActor:send(msgHandler.driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
 main()

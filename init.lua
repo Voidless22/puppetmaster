@@ -4,6 +4,7 @@ local actors = require('actors')
 local msgHandler = require('msgHandler')
 local gui = require('gui')
 local dataHandler = require('dataHandler')
+local utils = require('utils')
 local running = true
 DebugMode = true
 Settings = {
@@ -31,11 +32,11 @@ OpenSettings = false
 ShowSettings = false
 
 
-msgHandler.DriverActor:send(msgHandler.boxAddress, { id = 'Connect' })
+utils.driverActor:send(msgHandler.boxAddress, { id = 'Connect' })
 
 
 local function updateBoxData()
-    msgHandler.DriverActor:send(msgHandler.boxAddress, { id = 'UpdateData' })
+    utils.driverActor:send(msgHandler.boxAddress, { id = 'UpdateData' })
 end
 
 
@@ -48,12 +49,31 @@ local function main()
 end
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
 for index, value in pairs(Settings) do
-    if not Settings[index][mq.TLO.Me.Name()] then
+    if  Settings[index][mq.TLO.Me.Name()] == nil then
         Settings[index][mq.TLO.Me.Name()] = false
     end
     for charName, value in pairs(dataHandler.boxes) do
-        if not Settings[index][charName] then
+        if  Settings[index][charName] == nil then
             Settings[index][mq.TLO.Me.Name()] = false
+        end
+    end
+end
+local settingsFile, err = loadfile(mq.configDir .. '/' .. 'PMSettings.lua')
+if err then
+    for index, value in pairs(Settings) do
+        if not Settings[index][mq.TLO.Me.Name()] then
+            Settings[index][mq.TLO.Me.Name()] = false
+        end
+    end
+    mq.pickle('PMSettings.lua', Settings)
+elseif settingsFile then
+    local fileData = settingsFile()
+    for settingName, value in pairs(Settings) do
+        if fileData[settingName] == nil or fileData[settingName][mq.TLO.Me.Name()] == nil then
+            Settings[settingName][mq.TLO.Me.Name()] = false
+            mq.pickle('PMSettings.lua', Settings)
+        else
+            Settings[settingName][mq.TLO.Me.Name()] = fileData[settingName][mq.TLO.Me.Name()]
         end
     end
 end
