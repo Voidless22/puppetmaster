@@ -18,12 +18,21 @@ local function buildSpellTable()
             local spellLevel = mq.TLO.Spell(spellID).Level()
             local spellName = mq.TLO.Spell(spellID).Name()
 
-            table.insert(spellTable, {category=spellCategory, subcategory=spellSubcategory, level = spellLevel, name=spellName, id=spellID})
+            table.insert(spellTable,
+                {
+                    category = spellCategory,
+                    subcategory = spellSubcategory,
+                    level = spellLevel,
+                    name = spellName,
+                    id =
+                        spellID
+                })
         end
     end
     for index, value in ipairs(spellTable) do
         local spellEntry = spellTable[index]
-        printf('Index: %i, Category: %s Subcategory: %s Level: %i Name:%s ID:%i',index,spellEntry.category, spellEntry.subcategory, spellEntry.level, spellEntry.name, spellEntry.id)
+        printf('Index: %i, Category: %s Subcategory: %s Level: %i Name:%s ID:%i', index, spellEntry.category,
+            spellEntry.subcategory, spellEntry.level, spellEntry.name, spellEntry.id)
     end
     return spellTable
 end
@@ -45,24 +54,20 @@ function dataHandler.GetData(charName)
 end
 
 local function updateBuffs(boxName)
-    local buffCount = mq.TLO.Me.BuffCount()
     local currentBoxIndex = dataHandler.boxes[boxName]
-    if buffCount == 0 then
-        for i = 0, #currentBoxIndex.Buffs do
-            currentBoxIndex.Buffs[i] = nil
-        end
-    end
     for index = 1, mq.TLO.Me.MaxBuffSlots() do
         local buffFound = false
-        if mq.TLO.Me.Buff(index).Spell.ID() ~= nil then
-            for _, value in pairs(currentBoxIndex.Buffs) do
+        if mq.TLO.Me.Buff(index)() ~= nil then
+            for _, value in ipairs(currentBoxIndex.Buffs) do
                 if value == mq.TLO.Me.Buff(index).Spell.ID() then
                     buffFound = true
                 end
             end
-        end
-        if not buffFound then
-            currentBoxIndex.Buffs[index] = mq.TLO.Me.Buff(index).Spell.ID()
+            if not buffFound then
+                currentBoxIndex.Buffs[index] = mq.TLO.Me.Buff(index).Spell.ID()
+            end
+        else
+            currentBoxIndex.Buffs[index] = 0
         end
     end
 end
@@ -115,7 +120,6 @@ local function updateGroup(boxName)
     if not foundSelf then
         table.insert(currentBoxIndex.Group, mq.TLO.Me.ID())
     end
-
 end
 
 local function updateXTarget(boxName)

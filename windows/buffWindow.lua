@@ -15,8 +15,8 @@ function buffWindow.DrawBuffWindow(charName, charTable)
     local currentRow = 1
 
     if buffNames ~= nil then
-        for _, buff in pairs(buffNames) do
-            if buff ~= "Empty" then
+        for _, buff in ipairs(buffNames) do
+            if buff ~= 0 then
                 animSpellIcons:SetTextureCell(mq.TLO.Spell(buff).SpellIcon())
                 if currentColumn < columnCount then
                     local prevX = ImGui.GetCursorPosX()
