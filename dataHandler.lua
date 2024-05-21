@@ -64,10 +64,10 @@ local function updateBuffs(boxName)
                 end
             end
             if not buffFound then
-                currentBoxIndex.Buffs[index] = mq.TLO.Me.Buff(index).Spell.ID()
+                currentBoxIndex.Buffs[index] = {id=mq.TLO.Me.Buff(index).Spell.ID(), duration=mq.TLO.Me.Buff(index).Duration.TimeHMS() }
             end
         else
-            currentBoxIndex.Buffs[index] = 0
+            currentBoxIndex.Buffs[index] = {id=0, duration=0}
         end
     end
 end

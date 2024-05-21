@@ -15,9 +15,9 @@ function buffWindow.DrawBuffWindow(charName, charTable)
     local currentRow = 1
 
     if buffNames ~= nil then
-        for _, buff in ipairs(buffNames) do
-            if buff ~= 0 then
-                animSpellIcons:SetTextureCell(mq.TLO.Spell(buff).SpellIcon())
+        for index, data in ipairs(buffNames) do
+            if data.id ~= 0 then
+                animSpellIcons:SetTextureCell(mq.TLO.Spell(data.id).SpellIcon())
                 if currentColumn < columnCount then
                     local prevX = ImGui.GetCursorPosX()
                     local prevY = ImGui.GetCursorPosY()
@@ -32,6 +32,17 @@ function buffWindow.DrawBuffWindow(charName, charTable)
                     ImGui.SetCursorPosY(prevY + 32)
                     currentRow = currentRow + 1
                     currentColumn = 1
+                end
+                if ImGui.IsItemHovered() then
+                    if ImGui.BeginTooltip() then
+                        if data.id ~= 0 then
+                        ImGui.Text(mq.TLO.Spell(data.id).Name()..' '.. data.duration)
+                        else
+                        ImGui.Text('Empty')
+                        end
+
+                        ImGui.EndTooltip()
+                    end
                 end
             end
         end
