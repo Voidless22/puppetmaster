@@ -70,6 +70,9 @@ function msgHandler.boxMessageHandler(message)
     elseif message.content.id == 'updateSpellbar' and message.content.charName == mq.TLO.Me.Name() then
         print(message.content.gem, message.content.spellId)
         mq.cmdf('/memspell %i "%s"', message.content.gem, message.content.spellId)
+    elseif message.content.id == 'removeBuff' and message.content.charName == mq.TLO.Me.Name() then
+        local buffName = mq.TLO.Spell(message.content.buff).Name()
+        mq.TLO.Me.Buff(buffName).Remove()
     end
 end
 

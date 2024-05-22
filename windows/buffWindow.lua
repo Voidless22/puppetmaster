@@ -1,5 +1,7 @@
 local mq = require('mq')
 local ImGui = require('ImGui')
+local utils = require('utils')
+local msgHandler = require('msgHandler')
 
 local buffWindow = {}
 
@@ -34,6 +36,14 @@ function buffWindow.DrawBuffWindow(charName, charTable)
                     currentColumn = 1
                 end
                 if ImGui.IsItemHovered() then
+                    if ImGui.IsMouseClicked(ImGuiMouseButton.Left) then
+                    if charName ~= mq.TLO.Me.Name() then
+                        utils.driverActor:send(msgHandler.boxAddress, {id='removeBuff', buff=data.id, charName = charName})
+                    else
+                        mq.TLO.Me.Buff(mq.TLO.Spell(data.id).Name()).Remove()
+                    end
+
+                    end
                     if ImGui.BeginTooltip() then
                         if data.id ~= 0 then
                         ImGui.Text(mq.TLO.Spell(data.id).Name()..' '.. data.duration)
