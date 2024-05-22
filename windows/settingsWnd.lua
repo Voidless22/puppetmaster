@@ -26,24 +26,23 @@ function settingsWnd.GetSections()
     end
 end
 
-function settingsWnd.sectionHandler(section)
+function settingsWnd.sectionHandler(sectionName)
     ImGui.SetCursorPos(10, 60)
-
-    if ImGui.BeginListBox("", ImVec2(150, 350)) then
+    if not sectionName then sectionName = "" end
+    if ImGui.BeginListBox("##" .. sectionName, ImVec2(150, 350)) then
         for i, item in pairs(settingsWnd.characterList.items) do
             local _, clicked = ImGui.Selectable(item, settingsWnd.characterList.selected == i)
             ImGui.Separator()
             if clicked then settingsWnd.characterList.selected = i end
         end
+        ImGui.EndListBox()
     end
-    ImGui.EndListBox()
 end
 
 function settingsWnd.DrawSettingsWindow()
-    local settingsPath = 'mimicSettings.lua'
-    ImGui.SetWindowSize('Settings', 500, 500,ImGuiCond.FirstUseEver)
+    ImGui.SetWindowSize('Settings', 500, 500, ImGuiCond.FirstUseEver)
     settingsWnd.GetSections()
-    settingsWnd.sectionHandler()
+    settingsWnd.sectionHandler("Characters")
 
     ImGui.SetCursorPos(170, 60)
     local section = settingsWnd.characterList.items[settingsWnd.characterList.selected]
@@ -65,6 +64,9 @@ function settingsWnd.DrawSettingsWindow()
                             local newFileData, error = loadfile(mq.configDir .. '/' .. 'PMSettings.lua')
                             if newFileData then
                                 Settings = newFileData()
+                            end
+                            if error then
+                                print('error loading settings')
                             end
                         end
                     end

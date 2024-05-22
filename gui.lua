@@ -1,28 +1,30 @@
-local mq = require('mq')
-local imgui = require('ImGui')
-local settingsWnd = require('windows/settingsWnd')
-local dataHandler = require('dataHandler')
-local spellbarWnd = require('windows/spellbarWnd')
-local groupWindow = require('windows/groupWindow')
-local targetWindow= require('windows/targetWindow')
-local buffWindow  = require('windows/buffWindow')
+local mq            = require('mq')
+local imgui         = require('ImGui')
+local settingsWnd   = require('windows/settingsWnd')
+local dataHandler   = require('dataHandler')
+local spellbarWnd   = require('windows/spellbarWnd')
+local groupWindow   = require('windows/groupWindow')
+local targetWindow  = require('windows/targetWindow')
+local buffWindow    = require('windows/buffWindow')
 local xtargetWindow = require('windows/xtargetWindow')
 local petWindow     = require('windows.petWindow')
 local loadoutWindow = require('windows/loadoutWindow')
 local dashWindow    = require('windows.dashWindow')
 local playerWindow  = require('windows/playerWindow')
-local gui = {}
+local gui           = {}
 
-local window_flags = 0
-local no_titlebar = true
-local no_scrollbar = true
-local no_resize = false
+local window_flags  = 0
+local no_titlebar   = true
+local no_scrollbar  = true
+local no_resize     = false
 if no_titlebar then window_flags = bit32.bor(window_flags, ImGuiWindowFlags.NoTitleBar) end
 if no_scrollbar then window_flags = bit32.bor(window_flags, ImGuiWindowFlags.NoScrollbar) end
 if no_resize then window_flags = bit32.bor(window_flags, ImGuiWindowFlags.NoResize) end
 
 gui.showGui, gui.openGui = true, true
 
+gui.OpenSettings = false
+gui.ShowSettings = false
 
 
 local typeHandlers = {
@@ -62,14 +64,13 @@ local PMIconTexture = mq.CreateTexture(PMIconFile)
 local function drawPMButton()
     local draw_list = ImGui.GetWindowDrawList()
     ImGui.SetWindowSize(64, 64)
-    ImGui.SetCursorPos(0,0)
+    ImGui.SetCursorPos(0, 0)
     local bgPos = ImGui.GetWindowPosVec()
     draw_list:AddImage(PMIconTexture:GetTextureID(), bgPos, ImVec2(bgPos.x + 64, bgPos.y + 64))
-
-    local pmButton = ImGui.InvisibleButton('Settings', 60, 60)
-    if pmButton then
-        OpenSettings = not OpenSettings
-    end
+      local PMButton = ImGui.InvisibleButton("Settings", 60,60)
+      if PMButton then
+        gui.OpenSettings = not gui.OpenSettings
+      end
 end
 
 
@@ -85,9 +86,9 @@ function gui.guiLoop()
     OpenAllInstances(Settings.OpenLoadout, Settings.ShowLoadout, "Loadout", "Loadout", window_flags)
     OpenAllInstances(Settings.OpenPlayer, Settings.ShowPlayer, "Player", "Player", window_flags)
 
-    if OpenSettings then
-        OpenSettings, ShowSettings = ImGui.Begin('Settings', OpenSettings)
-        if ShowSettings then
+    if gui.OpenSettings then
+        gui.OpenSettings, gui.ShowSettings = ImGui.Begin('Settings',  gui.OpenSettings)
+        if gui.OpenSettings then
             settingsWnd.DrawSettingsWindow()
         end
         ImGui.End()

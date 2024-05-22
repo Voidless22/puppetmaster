@@ -44,11 +44,9 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 --move back overtop of the gem icon and add an invisible button to the gem array, then move to the next gem spot
                 ImGui.SetCursorPos(cursorPos)
                 gemButtons[currentGem] = ImGui.InvisibleButton((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"), 32, 32)
-                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
-
                 -- Spell Name Tooltip
-                if ImGui.IsItemHovered() then
-                    if ImGui.BeginTooltip() then
+                if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
+                    if ImGui.BeginItemTooltip() then
                         ImGui.Text((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"))
                         ImGui.EndTooltip()
                     end
@@ -58,6 +56,8 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                     utils.driverActor:send(msgHandler.boxAddress,
                         { id = 'castSpell', charName = charName, gem = currentGem })
                 end
+                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
+
             end
         end
     end

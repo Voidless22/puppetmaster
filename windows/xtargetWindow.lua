@@ -18,7 +18,7 @@ function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
                 local cursorPos = ImGui.GetCursorPosVec()
                 xtargetRatio[currentXtarget] = mq.TLO.Spawn(charTable.XTarget[currentXtarget]).PctHPs() / 100 or 0
                 xtargetManaRatio[currentXtarget] = mq.TLO.Spawn(charTable.XTarget[currentXtarget]).PctMana() / 100 or 0
-                ImGui.Text(mq.TLO.Spawn(charTable.XTarget[currentXtarget]).Name())
+                ImGui.Text(mq.TLO.Spawn(charTable.XTarget[currentXtarget]).CleanName())
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 255, 0, 0, 255)
                 ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)

@@ -104,9 +104,10 @@ function loadoutWindow.DrawSpellSubcategorySelect(charName, charTable)
                 end
             end
         end
+        ImGui.EndListBox()
+
     end
 
-    ImGui.EndListBox()
 end
 
 function loadoutWindow.DrawSpellSelect(charName, charTable)
@@ -134,8 +135,9 @@ function loadoutWindow.DrawSpellSelect(charName, charTable)
                 end
             end
         end
+        ImGui.EndListBox()
+
     end
-    ImGui.EndListBox()
 end
 
 function loadoutWindow.DrawCurrentSpellbar(charName, charTable)

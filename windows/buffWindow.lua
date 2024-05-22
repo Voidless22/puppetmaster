@@ -35,7 +35,7 @@ function buffWindow.DrawBuffWindow(charName, charTable)
                     currentRow = currentRow + 1
                     currentColumn = 1
                 end
-                if ImGui.IsItemHovered() then
+                if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
                     if ImGui.IsMouseClicked(ImGuiMouseButton.Left) then
                     if charName ~= mq.TLO.Me.Name() then
                         utils.driverActor:send(msgHandler.boxAddress, {id='removeBuff', buff=data.id, charName = charName})

@@ -28,8 +28,6 @@ Settings = {
     ShowPlayer= {},
 
 }
-OpenSettings = false
-ShowSettings = false
 
 
 utils.driverActor:send(msgHandler.boxAddress, { id = 'Connect' })
