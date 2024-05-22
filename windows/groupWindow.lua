@@ -8,10 +8,10 @@ groupWindow.followMATarget = false
 groupWindow.chaseToggle = false
 groupWindow.mimicSitting = "Sit"
 groupWindow.previousGroup = { 'Empty', 'Empty', 'Empty', 'Empty', 'Empty', 'Empty', }
-
+local GrpHPRatio = {}
+local GrpManaRatio = {}
 function groupWindow.DrawGroupWindow(charName, charTable)
-    local GrpHPRatio = {}
-    local GrpManaRatio = {}
+
 
     ImGui.SetWindowSize("Group-" .. charName, 128, 325, ImGuiCond.FirstUseEver)
     local groupButtons = {}
@@ -22,21 +22,27 @@ function groupWindow.DrawGroupWindow(charName, charTable)
         for index, value in ipairs(charTable.Group) do
             local cursorPos = ImGui.GetCursorPosVec()
 
-            if value and mq.TLO.Spawn(value)() then
+            if value and mq.TLO.Group.Member(value)() then
+                if value == charName then
                 GrpHPRatio[index] = (charTable.PctHP / 100) or 0
                 GrpManaRatio[index] = charTable.PctMana / 100 or 0
+                else
+                GrpHPRatio[index] = mq.TLO.Group.Member(mq.TLO.Spawn(value).Name()).PctHPs()
+                GrpManaRatio[index] = mq.TLO.Group.Member(mq.TLO.Spawn(value).Name()).PctMana()
+                end
 
-                ImGui.Text(mq.TLO.Spawn(value).Name())
+                ImGui.Text(value)
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 255, 0, 0, 255)
                 ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)
-                ImGui.ProgressBar(GrpHPRatio[index], -1, 5)
+                ImGui.ProgressBar((GrpHPRatio[index]or 0), -1, 5)
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() - 3)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 0, 0, 255, 255)
-                ImGui.ProgressBar(GrpManaRatio[index], -1, 5)
+                ImGui.ProgressBar((GrpManaRatio[index] or 0 ), -1, 5)
                 ImGui.PopStyleColor(3)
-                ImGui.SetCursorPos(cursorPos)
-                if mq.TLO.Group.Member(index)() or mq.TLO.Spawn(value)() then
+                if  mq.TLO.Spawn(value)() then
+                    ImGui.SetCursorPos(cursorPos)
+
                     groupButtons[index] = ImGui.InvisibleButton(
                         mq.TLO.Spawn(value).Name(), 128, 35)
                 end
