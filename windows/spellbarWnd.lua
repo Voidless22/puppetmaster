@@ -19,21 +19,22 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
     if spellIds then
         -- Set the spellbar size to our max Gem count, plus room for the loadout button
         ImGui.SetWindowSize('Spellbar-' .. charName, 40, ((#charTable.Spellbar + 2) * 36))
-
+        ImGui.SetCursorPosX(4)
         for currentGem = 1, #spellIds do
+            ImGui.SetCursorPosX(4)
+
             -- if we don't have a spell in the gem, move to the next gem spot and leave it empty
             if spellIds[currentGem] == 0 then
                 cursorPos = ImGui.GetCursorPosVec()
                 ImGui.SetCursorPos(cursorPos.x, cursorPos.y + 40)
-            elseif spellIds[currentGem] ~= 0  then
-
+            elseif spellIds[currentGem] ~= 0 then
                 cursorPos = ImGui.GetCursorPosVec()
                 screenCursorPos = ImGui.GetCursorScreenPosVec()
                 -- if we're casting and our last gem cast is this one, draw a red rect in the position where the gem icon would be
                 if charTable.isCasting and charTable.lastCastGem == currentGem then
                     local drawlist = ImGui.GetWindowDrawList()
-                    local x = screenCursorPos.x + 34
-                    local y = screenCursorPos.y + 34
+                    local x = screenCursorPos.x + 32
+                    local y = screenCursorPos.y + 32
                     local color = ImGui.GetColorU32(ImVec4(255, 0, 0, 255))
                     drawlist:AddRectFilled(screenCursorPos, ImVec2(x, y), color, 5)
                 else
@@ -43,7 +44,8 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 end
                 --move back overtop of the gem icon and add an invisible button to the gem array, then move to the next gem spot
                 ImGui.SetCursorPos(cursorPos)
-                gemButtons[currentGem] = ImGui.InvisibleButton((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"), 32, 32)
+                gemButtons[currentGem] = ImGui.InvisibleButton((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"), 32,
+                    32)
                 -- Spell Name Tooltip
                 if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
                     if ImGui.BeginItemTooltip() then
@@ -52,12 +54,16 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                     end
                 end
                 -- On Gem Clicked
-                if gemButtons[currentGem] and charName ~= mq.TLO.Me.Name() then
-                    utils.driverActor:send(msgHandler.boxAddress,
-                        { id = 'castSpell', charName = charName, gem = currentGem })
+                if gemButtons[currentGem] then
+                    if charName ~= mq.TLO.Me.Name() then
+                        utils.driverActor:send(msgHandler.boxAddress,
+                            { id = 'castSpell', charName = charName, gem = currentGem })
+                    else
+                        mq.cmdf('/cast %i', currentGem)
+                        charTable.lastCastGem = currentGem
+                    end
+                    ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
                 end
-                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
-
             end
         end
     end

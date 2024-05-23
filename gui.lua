@@ -62,13 +62,12 @@ local PMIconFile = getFilePath('PM.png')
 local PMIconTexture = mq.CreateTexture(PMIconFile)
 
 local function drawPMButton()
-    local draw_list = ImGui.GetWindowDrawList()
-    ImGui.SetWindowSize(64, 64)
+    ImGui.SetWindowSize(72,72)
     ImGui.SetCursorPos(0, 0)
     local bgPos = ImGui.GetWindowPosVec()
-    draw_list:AddImage(PMIconTexture:GetTextureID(), bgPos, ImVec2(bgPos.x + 64, bgPos.y + 64))
-      local PMButton = ImGui.InvisibleButton("Settings", 60,60)
+      local PMButton = ImGui.ImageButton("Settings", PMIconTexture:GetTextureID(), PMIconTexture.size,ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))
       if PMButton then
+        print(PMIconTexture:GetTextureID())
         gui.OpenSettings = not gui.OpenSettings
       end
 end
@@ -94,7 +93,7 @@ function gui.guiLoop()
         ImGui.End()
     end
     if gui.openGui then
-        gui.openGui, gui.showGui = ImGui.Begin('PMButton', gui.showGui, window_flags)
+        gui.openGui, gui.showGui = ImGui.Begin('PMButton', gui.showGui, bit32.bor(window_flags, ImGuiWindowFlags.NoResize))
         if gui.showGui then
             drawPMButton()
         end
