@@ -160,7 +160,6 @@ end
 
 function dataHandler.InitializeData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
-
     currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
     currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
     currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
@@ -184,10 +183,13 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()
     currentBoxIndex.lastCastGem = 0
     currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
+    currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
 end
 
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
+    currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
+
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()
     currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()

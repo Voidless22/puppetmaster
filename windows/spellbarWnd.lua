@@ -9,6 +9,7 @@ spellbarWnd.spellbarIds = {}
 
 function spellbarWnd.DrawSpellbar(charName, charTable)
     local gemButtons = {}
+    local gemBG = mq.FindTextureAnimation('A_SpellGemBackground')
     local animSpellIcons = mq.FindTextureAnimation('A_SpellIcons')
     local spellIds = charTable.Spellbar
     local cursorPos
@@ -35,11 +36,17 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                     local drawlist = ImGui.GetWindowDrawList()
                     local x = screenCursorPos.x + 32
                     local y = screenCursorPos.y + 32
-                    local color = ImGui.GetColorU32(ImVec4(255, 0, 0, 255))
+                    local color = ImGui.GetColorU32(ImVec4(255, 0, 0, 5))
                     drawlist:AddRectFilled(screenCursorPos, ImVec2(x, y), color, 5)
+                    ImGui.SetCursorPos(cursorPos)
+                    ImGui.SetCursorPos(cursorPos + ImVec2(11,8))
+                    ImGui.Text(charTable.CastTimeLeft)
+
                 else
                     -- otherwise just draw our normal texture
+        
                     animSpellIcons:SetTextureCell(mq.TLO.Spell(spellIds[currentGem]).SpellIcon())
+
                     ImGui.DrawTextureAnimation(animSpellIcons, 32, 32)
                 end
                 --move back overtop of the gem icon and add an invisible button to the gem array, then move to the next gem spot
@@ -49,7 +56,8 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 -- Spell Name Tooltip
                 if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
                     if ImGui.BeginItemTooltip() then
-                        ImGui.Text((mq.TLO.Spell(spellIds[currentGem]).Name() or "Empty"))
+                        ImGui.Text((mq.TLO.Spell(spellIds[currentGem]).Name()) or "Empty")
+                        ImGui.Text(("Type: "..mq.TLO.Spell(spellIds[currentGem]).TargetType()) or "Empty")
                         ImGui.EndTooltip()
                     end
                 end
@@ -62,8 +70,9 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                         mq.cmdf('/cast %i', currentGem)
                         charTable.lastCastGem = currentGem
                     end
-                    ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
                 end
+                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 4)
+
             end
         end
     end
