@@ -7,6 +7,8 @@ local msgHandler = require('msgHandler')
 
 spellbarWnd.spellbarIds = {}
 
+
+
 function spellbarWnd.DrawSpellbar(charName, charTable)
     local gemButtons = {}
     local gemBG = mq.FindTextureAnimation('A_SpellGemBackground')
@@ -36,9 +38,13 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                     local drawlist = ImGui.GetWindowDrawList()
                     local x = screenCursorPos.x + 32
                     local y = screenCursorPos.y + 32
-                    local color = ImGui.GetColorU32(ImVec4(255, 0, 0, 5))
-                    drawlist:AddRectFilled(screenCursorPos, ImVec2(x, y), color, 5)
-                    ImGui.SetCursorPos(cursorPos)
+                    local color = ImGui.GetColorU32(1,0,0,0.25)
+                   animSpellIcons:SetTextureCell(mq.TLO.Spell(spellIds[currentGem]).SpellIcon())
+                   ImGui.DrawTextureAnimation(animSpellIcons, 32, 32)
+                   drawlist:AddRectFilled(screenCursorPos, ImVec2(x, y),color)
+
+
+                   ImGui.SetCursorPos(cursorPos)
                     ImGui.SetCursorPos(cursorPos + ImVec2(11,8))
                     ImGui.Text(charTable.CastTimeLeft)
 
