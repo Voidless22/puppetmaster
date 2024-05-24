@@ -1,6 +1,6 @@
 local mq = require('mq')
 local actors = require('actors')
-
+local timer = require('timer')
 local dataHandler = {}
 
 dataHandler.boxes = {}
@@ -103,7 +103,14 @@ local function updateSpellbar(boxName)
             currentBoxIndex.Spellbar[gem] = 0
         else
             currentBoxIndex.Spellbar[gem] = mq.TLO.Me.Gem(gem).ID()
+            if not mq.TLO.Me.SpellReady(gem)() then
+                currentBoxIndex.SpellCooldowns[gem] = mq.TLO.Me.Gem(gem).RecastTime()
+            else
+                currentBoxIndex.SpellCooldowns[gem] = 0
+            end
+
         end
+      
     end
 end
 local function updateGroup(boxName)
@@ -184,6 +191,7 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.lastCastGem = 0
     currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
     currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
+    currentBoxIndex.SpellCooldowns = {}
 end
 
 function dataHandler.UpdateData(boxName)

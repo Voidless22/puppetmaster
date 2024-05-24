@@ -117,6 +117,13 @@ function loadoutWindow.DrawSpellSelect(charName, charTable)
                 if value.category == currentCategory[charName] and value.subcategory == currentSubcategory[charName] then
                     local _, clicked = ImGui.Selectable('Lvl:' .. value.level .. ' ' .. value.name,
                         currentSpell[charName] == value.name)
+                        if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
+                            if ImGui.BeginItemTooltip() then
+                                ImGui.Text(value.name or "Empty")
+                                ImGui.Text(("Type: "..mq.TLO.Spell(value.name).TargetType()) or "Empty")
+                                ImGui.EndTooltip()
+                            end
+                        end
                     ImGui.Separator()
                     if clicked then
                         currentSpell[charName] = value.name

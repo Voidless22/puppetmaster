@@ -1,6 +1,7 @@
 local mq = require('mq')
 local imgui = require('ImGui')
 local icons = require('icons')
+local timer = require('timer')
 local spellbarWnd = {}
 local utils = require('utils')
 local msgHandler = require('msgHandler')
@@ -8,6 +9,7 @@ local msgHandler = require('msgHandler')
 spellbarWnd.spellbarIds = {}
 
 
+local gemTimers = {}
 
 function spellbarWnd.DrawSpellbar(charName, charTable)
     local gemButtons = {}
@@ -18,7 +20,6 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
     local screenCursorPos
     ImGui.SetWindowSize("Spellbar-" .. charName, 40, 360)
     ImGui.SetCursorPos(4, 4)
-
     if spellIds then
         -- Set the spellbar size to our max Gem count, plus room for the loadout button
         ImGui.SetWindowSize('Spellbar-' .. charName, 40, ((#charTable.Spellbar + 2) * 36))
@@ -31,6 +32,18 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                 cursorPos = ImGui.GetCursorPosVec()
                 ImGui.SetCursorPos(cursorPos.x, cursorPos.y + 40)
             elseif spellIds[currentGem] ~= 0 then
+                if charTable.SpellCooldowns[currentGem] ~= 0 then
+                    if not gemTimers[currentGem] then
+                    gemTimers[currentGem] = timer:new(charTable.SpellCooldowns[currentGem])
+                    end
+                    if gemTimers[currentGem] then
+                        if gemTimers[currentGem]:timer_expired() then
+                            gemTimers[currentGem] = timer:new(charTable.SpellCooldowns[currentGem])
+                        end
+                    end
+                end
+
+
                 cursorPos = ImGui.GetCursorPosVec()
                 screenCursorPos = ImGui.GetCursorScreenPosVec()
                 -- if we're casting and our last gem cast is this one, draw a red rect in the position where the gem icon would be
@@ -46,8 +59,21 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
 
                    ImGui.SetCursorPos(cursorPos)
                     ImGui.SetCursorPos(cursorPos + ImVec2(11,8))
-                    ImGui.Text(charTable.CastTimeLeft)
-
+                    ImGui.Text(charTable.CastTimeLeft)                    
+                elseif charTable.SpellCooldowns[currentGem] ~= 0 then
+                    
+                    local drawlist = ImGui.GetWindowDrawList()
+                    local x = screenCursorPos.x + 32
+                    local y = screenCursorPos.y + 32
+                    local color = ImGui.GetColorU32(0.64,0.21,0.99,0.25)
+                   animSpellIcons:SetTextureCell(mq.TLO.Spell(spellIds[currentGem]).SpellIcon())
+                   ImGui.DrawTextureAnimation(animSpellIcons, 32, 32)
+                   drawlist:AddRectFilled(screenCursorPos, ImVec2(x, y),color)
+                   ImGui.SetCursorPos(cursorPos)
+                    ImGui.SetCursorPos(cursorPos + ImVec2(0,8))
+                    ImGui.SetWindowFontScale(0.80)
+                    ImGui.Text(gemTimers[currentGem]:time_remaining())   
+                    ImGui.SetWindowFontScale(1)
                 else
                     -- otherwise just draw our normal texture
         
@@ -64,6 +90,9 @@ function spellbarWnd.DrawSpellbar(charName, charTable)
                     if ImGui.BeginItemTooltip() then
                         ImGui.Text((mq.TLO.Spell(spellIds[currentGem]).Name()) or "Empty")
                         ImGui.Text(("Type: "..mq.TLO.Spell(spellIds[currentGem]).TargetType()) or "Empty")
+                        if gemTimers[currentGem] and not gemTimers[currentGem]:timer_expired()then
+                            ImGui.Text("Recast Time:" .. gemTimers[currentGem]:time_remaining())
+                        end
                         ImGui.EndTooltip()
                     end
                 end
