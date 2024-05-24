@@ -2,7 +2,7 @@ local mq = require('mq')
 local ImGui = require('ImGui')
 local msgHandler = require('msgHandler')
 local utils = require('utils')
-
+local dataHandler = require('dataHandler')
 local groupWindow = {}
 groupWindow.followMATarget = false
 groupWindow.chaseToggle = false
@@ -11,8 +11,6 @@ groupWindow.previousGroup = { 'Empty', 'Empty', 'Empty', 'Empty', 'Empty', 'Empt
 local GrpHPRatio = {}
 local GrpManaRatio = {}
 function groupWindow.DrawGroupWindow(charName, charTable)
-
-
     ImGui.SetWindowSize("Group-" .. charName, 128, 325, ImGuiCond.FirstUseEver)
     local groupButtons = {}
     ImGui.SetCursorPos(15, 1)
@@ -21,47 +19,43 @@ function groupWindow.DrawGroupWindow(charName, charTable)
         ImGui.SetCursorPos(4, 20)
         for index, value in ipairs(charTable.Group) do
             local cursorPos = ImGui.GetCursorPosVec()
-
-            if value and mq.TLO.Group.Member(value)() then
+            if value then
+                ImGui.Text(value)
                 if value == charName then
-                GrpHPRatio[index] = (charTable.PctHP / 100) or 0
-                GrpManaRatio[index] = charTable.PctMana / 100 or 0
+                    GrpHPRatio[index] = (charTable.PctHP / 100) or 0
+                    GrpManaRatio[index] = (charTable.PctMana / 100) or 0
+                elseif dataHandler.boxes[value].PctHP then
+                    GrpHPRatio[index] = (dataHandler.boxes[value].PctHP / 100) or 0
+                    GrpManaRatio[index] = (dataHandler.boxes[value].PctMana / 100) or 0
+                elseif mq.TLO.Spawn(value)() then
+                    GrpHPRatio[index] = (mq.TLO.Spawn(value).PctHPs() / 100) or 0
+                    GrpManaRatio[index] = (mq.TLO.Spawn(value).PctMana() / 100) or 0
                 else
-                GrpHPRatio[index] = mq.TLO.Group.Member(mq.TLO.Spawn(value).Name()).PctHPs()
-                GrpManaRatio[index] = mq.TLO.Group.Member(mq.TLO.Spawn(value).Name()).PctMana()
+                    GrpHPRatio[index] = 0
+                    GrpManaRatio[index] = 0
                 end
 
-                ImGui.Text(value)
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 255, 0, 0, 255)
                 ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)
-                ImGui.ProgressBar((GrpHPRatio[index]or 0), -1, 5)
+                ImGui.ProgressBar((GrpHPRatio[index]), -1, 5)
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() - 3)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 0, 0, 255, 255)
-                ImGui.ProgressBar((GrpManaRatio[index] or 0 ), -1, 5)
+                ImGui.ProgressBar((GrpManaRatio[index]), -1, 5)
                 ImGui.PopStyleColor(3)
-                if  mq.TLO.Spawn(value)() then
-                    ImGui.SetCursorPos(cursorPos)
-
-                    groupButtons[index] = ImGui.InvisibleButton(
-                        mq.TLO.Spawn(value).Name(), 128, 35)
-                end
-
-                if groupButtons[index] then
-                    if charName ~= mq.TLO.Me.Name() then
-                        utils.driverActor:send({ mailbox = 'Box', script = 'puppetmaster/box', char = charName },
-                            {
-                                id = 'newTarget',
-                                charName = charName,
-                                targetId = mq.TLO.Spawn(charTable.Group[index])
-                                    .Name()
-                            })
-                    else
-                        mq.cmdf('/mqtarget id %i', mq.TLO.Spawn(charTable.Group[index]).ID())
-                    end
-                end
-                ImGui.SetCursorPos(4, ImGui.GetCursorPosY())
+                ImGui.SetCursorPos(cursorPos)
+                groupButtons[index] = ImGui.InvisibleButton((mq.TLO.Spawn(value).Name() or ""), 128, 35)
             end
+
+            if groupButtons[index] then
+                if charName ~= mq.TLO.Me.Name() then
+                    local newTargetMsg ={id = 'newTarget',charName = charName,targetId = mq.TLO.Spawn(charTable.Group[index]).Name()}
+                    utils.driverActor:send(msgHandler.boxAddress, newTargetMsg)
+                else
+                    mq.cmdf('/mqtarget id %i', mq.TLO.Spawn(charTable.Group[index]).ID())
+                end
+            end
+            ImGui.SetCursorPos(4, ImGui.GetCursorPosY())
         end
     end
 end
