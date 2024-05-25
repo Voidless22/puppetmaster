@@ -64,8 +64,13 @@ function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
                 -- create dummy button for targeting
                 xtargetButtons[xtIndex] = ImGui.InvisibleButton(cXTSpawn.Name(), 128, 29)
                 if xtargetButtons[xtIndex] then
+                    if charName ~= mq.TLO.Me.Name() then
                     utils.driverActor:send(msgHandler.boxAddress,
                         { id = 'newTarget', charName = charName, targetId = cXTSpawn.DisplayName() })
+                    else
+                        mq.cmdf('/mqtarget %s', cXTSpawn.Name())
+                    end
+
                 end
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 5)
             end
