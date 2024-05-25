@@ -167,8 +167,8 @@ end
 
 function dataHandler.InitializeData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
-    currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
-    currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
+    currentBoxIndex.PctHP = mq.TLO.Me.PctHPs() or 0
+    currentBoxIndex.PctMana = mq.TLO.Me.PctMana() or 0
     currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
     currentBoxIndex.Level = mq.TLO.Me.Level()
     currentBoxIndex.Class = mq.TLO.Me.Class()
