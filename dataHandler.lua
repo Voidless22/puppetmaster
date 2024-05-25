@@ -64,10 +64,11 @@ local function updateBuffs(boxName)
                 end
             end
             if not buffFound then
-                currentBoxIndex.Buffs[index] = {id=mq.TLO.Me.Buff(index).Spell.ID(), duration=mq.TLO.Me.Buff(index).Duration.TimeHMS() }
+                currentBoxIndex.Buffs[index] = { id = mq.TLO.Me.Buff(index).Spell.ID(), duration = mq.TLO.Me.Buff(index)
+                .Duration.TimeHMS() }
             end
         else
-            currentBoxIndex.Buffs[index] = {id=0, duration=0}
+            currentBoxIndex.Buffs[index] = { id = 0, duration = 0 }
         end
     end
 end
@@ -108,9 +109,7 @@ local function updateSpellbar(boxName)
             else
                 currentBoxIndex.SpellCooldowns[gem] = 0
             end
-
         end
-      
     end
 end
 local function updateGroup(boxName)
@@ -133,12 +132,22 @@ local function updateXTarget(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     for i = 1, mq.TLO.Me.XTargetSlots() do
         if mq.TLO.Me.XTarget(i).ID() == nil or mq.TLO.Me.XTarget(i).ID() == 0 then
-            currentBoxIndex.XTarget[i] = 'Empty'
-            currentBoxIndex.XTargetConColors[i] = 0
+            if not currentBoxIndex.XTarget[i] then
+                currentBoxIndex.XTarget[i] = {Id = 0, ConColor = 0, AggroPct = 0}
+            end
+            currentBoxIndex.XTarget[i].Id = 0
+            currentBoxIndex.XTarget[i].ConColor = 0
+            currentBoxIndex.XTarget[i].AggroPct = 0
+
         end
         if mq.TLO.Me.XTarget(i).ID() ~= nil and mq.TLO.Me.XTarget(i).ID() ~= 0 then
-            currentBoxIndex.XTarget[i] = mq.TLO.Me.XTarget(i).ID()
-            currentBoxIndex.XTargetConColors[i] = mq.TLO.Me.XTarget(i).ConColor()
+            if not currentBoxIndex.XTarget[i] then
+                currentBoxIndex.XTarget[i] = {Id = 0, ConColor = 0, AggroPct = 0}
+            end
+            
+            currentBoxIndex.XTarget[i].Id = mq.TLO.Me.XTarget(i).ID()
+            currentBoxIndex.XTarget[i].ConColor = mq.TLO.Me.XTarget(i).ConColor()
+            currentBoxIndex.XTarget[i].AggroPct = mq.TLO.Me.XTarget(i).PctAggro()
         end
     end
 end
@@ -165,7 +174,7 @@ local function updatePet(boxName)
         -- Taunt
         currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()
     end
-end        
+end
 
 
 function dataHandler.InitializeData(boxName)
@@ -197,6 +206,7 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
     currentBoxIndex.SpellCooldowns = {}
     currentBoxIndex.XTargetConColors = {}
+    currentBoxIndex.XTargetAggroPcts = {}
 end
 
 function dataHandler.UpdateData(boxName)

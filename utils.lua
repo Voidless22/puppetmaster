@@ -21,7 +21,8 @@ local colors = {
     ["Light Blue"] = ImVec4(0.3, 0.64, 1, 1),
     ["Blue"] = ImVec4(0.2,0.3, 1, 1),
     ["Yellow"] = ImVec4(1, 0.94, 0, 1),
-    ["Grey"] = ImVec4(0.42,0.48,0.53,1)
+    ["Grey"] = ImVec4(0.42,0.48,0.53,1),
+    ["White"] = ImVec4(1,1,1,1)
 
 }
 

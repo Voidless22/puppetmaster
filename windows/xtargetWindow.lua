@@ -3,50 +3,69 @@ local imgui = require('ImGui')
 local msgHandler = require('msgHandler')
 local utils = require('utils')
 local xtargetWindow = {}
-
-
+local function GetConTextColor(conColor)
+    if conColor == "GREY" then
+        return utils.Color("Grey", 1)
+    elseif conColor == "GREEN" then
+        return utils.Color("Green", 1)
+    elseif conColor == "LIGHT BLUE" then
+        return utils.Color("Light Blue", 1)
+    elseif conColor == "BLUE" then
+        return utils.Color("Blue", 1)
+    elseif conColor == "YELLOW" then
+        return utils.Color("Yellow", 1)
+    elseif conColor == "RED" then
+        return utils.Color("Red", 1)
+    elseif conColor == "WHITE" then
+        return utils.Color("White", 1)
+    else
+        -- default white
+        return ImVec4(1, 1, 1, 1)
+    end
+end
 function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
-    ImGui.SetWindowSize("XTarget-" .. charName, 128, 256,ImGuiCond.FirstUseEver)
-    local xtargetRatio = {}
+    ImGui.SetWindowSize("XTarget-" .. charName, 128, 256, ImGuiCond.FirstUseEver)
+    local xtargetHPPct = {}
     local xtargetButtons = {}
-    local xtargetManaRatio = {}
+    local cursorPos
     ImGui.Text("%s's XTarget", charName)
     if charTable.XTarget ~= nil then
-        for currentXtarget = 1, #charTable.XTarget do
-            if charTable.XTarget[currentXtarget] ~= 'Empty' and charTable.XTarget[currentXtarget] ~= 0 and charTable.XTarget[currentXtarget] ~= nil
-                and mq.TLO.Spawn(charTable.XTarget[currentXtarget])() ~= nil then
-                local cursorPos = ImGui.GetCursorPosVec()
-                xtargetRatio[currentXtarget] = mq.TLO.Spawn(charTable.XTarget[currentXtarget]).PctHPs() / 100 or 0
-                xtargetManaRatio[currentXtarget] = mq.TLO.Spawn(charTable.XTarget[currentXtarget]).PctMana() / 100 or 0
-                if charTable.XTargetConColors[currentXtarget] == "GREY" then
-            
-                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Grey",1))
-                elseif charTable.XTargetConColors[currentXtarget] == "GREEN" then
-                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Green",1))
-                elseif charTable.XTargetConColors[currentXtarget] == "LIGHT BLUE" then
-                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Light Blue",1))
-                elseif charTable.XTargetConColors[currentXtarget] == "BLUE" then
-                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Blue",1))
-                elseif charTable.XTargetConColors[currentXtarget] == "YELLOW" then
-                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Yellow",1))
-                elseif charTable.XTargetConColors[currentXtarget] == "RED" then
-                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Red",1))
+        for xtIndex = 1, #charTable.XTarget do
+            local cXTData = charTable.XTarget[xtIndex]
+            local cXTSpawn = mq.TLO.Spawn(cXTData.Id)
+            if cXTData and cXTSpawn() then
+                -- this is our cursor starting point
+                cursorPos = ImGui.GetCursorPosVec()
+                -- create pct of xt spawn hp for progress bar
+                xtargetHPPct[xtIndex] = cXTSpawn.PctHPs() / 100 or 0
+                -- set the text color to con color if it exists, otherwise just draw white
+                if cXTData.ConColor ~= 0 and cXTData.ConColor then
+                    ImGui.PushStyleColor(ImGuiCol.Text, GetConTextColor(cXTData.ConColor))
+                    ImGui.Text(cXTSpawn.CleanName())
+                    ImGui.PopStyleColor()
+                else
+                    ImGui.Text(cXTSpawn.CleanName())
+                end
+                -- draw HP bar
+                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
+                ImGui.PushStyleColor(ImGuiCol.PlotHistogram, utils.Color("Red", 1))
+                ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)
+                ImGui.ProgressBar(xtargetHPPct[xtIndex], -1, 5)
+                ImGui.PopStyleColor(2)
+                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() - 3)
+                -- Draw aggro bar if it's necessary
+                if cXTData.AggroPct ~= 0 then
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, utils.Color("Green", 1))
+                    ImGui.ProgressBar(cXTData.AggroPct, -1, 5)
+                    ImGui.PopStyleColor(1)
                 end
 
-                ImGui.Text(mq.TLO.Spawn(charTable.XTarget[currentXtarget]).CleanName())
-                ImGui.PopStyleColor()
-                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
-                ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 255, 0, 0, 255)
-                ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)
-                ImGui.ProgressBar(xtargetRatio[currentXtarget], -1, 5)
-                ImGui.SetCursorPos(4, ImGui.GetCursorPosY() - 3)
-                ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 0, 0, 255, 255)
-                ImGui.ProgressBar(xtargetManaRatio[currentXtarget], -1, 5)
-                ImGui.PopStyleColor(3)
                 ImGui.SetCursorPos(cursorPos)
-                xtargetButtons[currentXtarget] = ImGui.InvisibleButton(mq.TLO.Spawn(charTable.XTarget[currentXtarget]).Name(),128, 29)
-                if xtargetButtons[currentXtarget] then
-                    utils.driverActor:send({mailbox='box', script='puppetmaster/box', character=charName}, {id ='newTarget', charName = charName, targetId =mq.TLO.Spawn(charTable.XTarget[currentXtarget]).DisplayName()})
+                -- create dummy button for targeting
+                xtargetButtons[xtIndex] = ImGui.InvisibleButton(cXTSpawn.Name(), 128, 29)
+                if xtargetButtons[xtIndex] then
+                    utils.driverActor:send(msgHandler.boxAddress,
+                        { id = 'newTarget', charName = charName, targetId = cXTSpawn.DisplayName() })
                 end
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 5)
             end
