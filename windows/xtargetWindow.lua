@@ -18,7 +18,23 @@ function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
                 local cursorPos = ImGui.GetCursorPosVec()
                 xtargetRatio[currentXtarget] = mq.TLO.Spawn(charTable.XTarget[currentXtarget]).PctHPs() / 100 or 0
                 xtargetManaRatio[currentXtarget] = mq.TLO.Spawn(charTable.XTarget[currentXtarget]).PctMana() / 100 or 0
+                if charTable.XTargetConColors[currentXtarget] == "GREY" then
+            
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Grey",1))
+                elseif charTable.XTargetConColors[currentXtarget] == "GREEN" then
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Green",1))
+                elseif charTable.XTargetConColors[currentXtarget] == "LIGHT BLUE" then
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Light Blue",1))
+                elseif charTable.XTargetConColors[currentXtarget] == "BLUE" then
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Blue",1))
+                elseif charTable.XTargetConColors[currentXtarget] == "YELLOW" then
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Yellow",1))
+                elseif charTable.XTargetConColors[currentXtarget] == "RED" then
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Red",1))
+                end
+
                 ImGui.Text(mq.TLO.Spawn(charTable.XTarget[currentXtarget]).CleanName())
+                ImGui.PopStyleColor()
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
                 ImGui.PushStyleColor(ImGuiCol.PlotHistogram, 255, 0, 0, 255)
                 ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)

@@ -134,9 +134,11 @@ local function updateXTarget(boxName)
     for i = 1, mq.TLO.Me.XTargetSlots() do
         if mq.TLO.Me.XTarget(i).ID() == nil or mq.TLO.Me.XTarget(i).ID() == 0 then
             currentBoxIndex.XTarget[i] = 'Empty'
+            currentBoxIndex.XTargetConColors[i] = 0
         end
         if mq.TLO.Me.XTarget(i).ID() ~= nil and mq.TLO.Me.XTarget(i).ID() ~= 0 then
             currentBoxIndex.XTarget[i] = mq.TLO.Me.XTarget(i).ID()
+            currentBoxIndex.XTargetConColors[i] = mq.TLO.Me.XTarget(i).ConColor()
         end
     end
 end
@@ -194,6 +196,7 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
     currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
     currentBoxIndex.SpellCooldowns = {}
+    currentBoxIndex.XTargetConColors = {}
 end
 
 function dataHandler.UpdateData(boxName)

@@ -2,6 +2,7 @@ local mq = require('mq')
 local dataHandler = require('dataHandler')
 local utils = {}
 local msgHandler = require('msgHandler')
+local imgui = require('ImGui')
 local actors = require('actors')
 local function SpellSorter(a, b)
     if a[1] < b[1] then
