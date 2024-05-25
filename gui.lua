@@ -54,8 +54,12 @@ local function OpenAllInstances(open, show, name, type, windowflags)
     end
 end
 local function getFilePath(fileName)
-    local filePath = debug.getinfo(1, 'S').short_src
-    local path = filePath:match("(.+\\)") .. fileName
+    local filePath = debug.getinfo(1,'S').short_src
+
+    print(filePath)
+    local path = filePath:gsub("gui.lua", fileName)
+
+    print(path)
     return path
 end
 local PMIconFile = getFilePath('PM.png')
@@ -64,12 +68,14 @@ local PMIconTexture = mq.CreateTexture(PMIconFile)
 local function drawPMButton()
     ImGui.SetWindowSize(72,72)
     ImGui.SetCursorPos(0, 0)
-    local bgPos = ImGui.GetWindowPosVec()
+    if PMIconTexture then
       local PMButton = ImGui.ImageButton("Settings", PMIconTexture:GetTextureID(), PMIconTexture.size,ImVec2(0, 0), ImVec2(1, 1), ImVec4(0, 0, 0, 0), ImVec4(1, 1, 1, 1))
+    
       if PMButton then
         print(PMIconTexture:GetTextureID())
         gui.OpenSettings = not gui.OpenSettings
       end
+    end
 end
 
 
@@ -94,7 +100,7 @@ function gui.guiLoop()
     end
     if gui.openGui then
         gui.openGui, gui.showGui = ImGui.Begin('PMButton', gui.showGui, bit32.bor(window_flags, ImGuiWindowFlags.NoResize))
-        if gui.showGui then
+        if gui.showGui and PMIconTexture then
             drawPMButton()
         end
         ImGui.End()

@@ -24,7 +24,7 @@ function groupWindow.DrawGroupWindow(charName, charTable)
                 if value == charName then
                     GrpHPRatio[index] = (charTable.PctHP / 100) or 0
                     GrpManaRatio[index] = (charTable.PctMana / 100) or 0
-                elseif dataHandler.boxes[value].PctHP then
+                elseif dataHandler.boxes[value] and dataHandler.boxes[value].PctHP then
                     GrpHPRatio[index] = (dataHandler.boxes[value].PctHP / 100) or 0
                     GrpManaRatio[index] = (dataHandler.boxes[value].PctMana / 100) or 0
                 elseif mq.TLO.Spawn(value)() then
