@@ -14,7 +14,24 @@ local function SpellSorter(a, b)
 end
 
 local dataTable = dataHandler.boxes[mq.TLO.Me.Name()]
+local colors = {
+    ["Red"] = ImVec4(1, 0, 0, 1),
+    ["Green"] = ImVec4(0, 1, 0, 1),
+    ["Light Blue"] = ImVec4(0.3, 0.64, 1, 1),
+    ["Blue"] = ImVec4(0.2,0.3, 1, 1),
+    ["Yellow"] = ImVec4(1, 0.94, 0, 1),
+    ["Grey"] = ImVec4(0.42,0.48,0.53,1)
 
+}
+
+function utils.Color(color, alpha)
+    local c = colors[color]
+    if c then
+        return ImVec4(c.x, c.y, c.z, alpha or c.w)
+    end
+    printf("Color: %s doesn't exist.", color)
+    return nil
+end
 
 function utils.mirrorTarget()
     if mq.TLO.Group.MainAssist.ID() ~= nil and not (mq.TLO.Group.MainAssist.OtherZone() or mq.TLO.Group.MainAssist.Offline() or mq.TLO.Group.MainAssist.Name() == mq.TLO.Me.Name()) then
@@ -41,7 +58,8 @@ function utils.meleeHandler()
     if mq.TLO.Target.ID() == 0 or mq.TLO.Target.Dead() then
         dataTable.meleeTarget = false
         utils.boxActor:send(msgHandler.driverAddress,
-            { id = 'updateMeleeTarget', charName = mq.TLO.Me.Name(), meleeTarget = dataHandler.boxes[mq.TLO.Me.Name()].meleeTarget })
+            { id = 'updateMeleeTarget', charName = mq.TLO.Me.Name(), meleeTarget = dataHandler.boxes[mq.TLO.Me.Name()]
+            .meleeTarget })
         mq.cmd('/attack off')
     else
         if mq.TLO.Target() ~= nil and mq.TLO.Target.ID() ~= mq.TLO.Me.ID() then
@@ -56,6 +74,7 @@ function utils.meleeHandler()
         end
     end
 end
+
 utils.driverActor = actors.register('Driver', msgHandler.driverMessageHandler)
 utils.boxActor = actors.register('Box', msgHandler.boxMessageHandler)
 

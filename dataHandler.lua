@@ -163,7 +163,8 @@ local function updatePet(boxName)
         -- Taunt
         currentBoxIndex.PetTaunt = mq.TLO.Me.Pet.Taunt()
     end
-end
+end        
+
 
 function dataHandler.InitializeData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
@@ -179,6 +180,7 @@ function dataHandler.InitializeData(boxName)
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
     currentBoxIndex.targetID = mq.TLO.Target.ID()
+    currentBoxIndex.targetConColor = mq.TLO.Target.ConColor()
     currentBoxIndex.Spellbook = buildSpellTable()
     currentBoxIndex.CombatAbilities = {}
     currentBoxIndex.PetFollow = true
@@ -197,6 +199,7 @@ end
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
+    currentBoxIndex.targetConColor = mq.TLO.Target.ConColor()
 
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()

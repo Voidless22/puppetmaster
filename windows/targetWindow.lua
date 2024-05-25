@@ -1,5 +1,6 @@
 local mq = require('mq')
 local ImGui = require('ImGui')
+local utils = require('utils')
 
 local targetWindow = {}
 
@@ -10,18 +11,40 @@ local animSpellIcons = mq.FindTextureAnimation('A_SpellIcons')
 function targetWindow.DrawTargetWindow(charName, charTable)
     local currentColumn = 1
     local currentRow = 1
-    local targetHPRatio
+    local targetHPPct
     local windowWidth = ImGui.GetWindowSizeVec().x
     local columnCount = math.floor(windowWidth / 32)
-    ImGui.SetWindowSize("Target-" .. charName, 140, 256,ImGuiCond.FirstUseEver)
+    ImGui.SetWindowSize("Target-" .. charName, 140, 256, ImGuiCond.FirstUseEver)
     ImGui.SetCursorPos(4, 0)
     ImGui.Text("%s's Target", charName)
-    ImGui.SetCursorPos(4, 20)
-    if charTable.targetID ~= 'Empty' and mq.TLO.Spawn(charTable.targetID)() ~= nil then
-        targetHPRatio = mq.TLO.Spawn(charTable.targetID).PctHPs() / 100 or 0
+    ImGui.Separator()
+    ImGui.SetCursorPos(4, 22)
+    if charTable.targetID and mq.TLO.Spawn(charTable.targetID)() and charTable.targetConColor then
+        targetHPPct = mq.TLO.Spawn(charTable.targetID).PctHPs() / 100 or 0
+        if charTable.targetConColor == "GREY" then
+            
+            ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Grey",1))
+        elseif charTable.targetConColor == "GREEN" then
+            ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Green",1))
+        elseif charTable.targetConColor == "LIGHT BLUE" then
+            ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Light Blue",1))
+        elseif charTable.targetConColor == "BLUE" then
+            ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Blue",1))
+        elseif charTable.targetConColor == "YELLOW" then
+            ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Yellow",1))
+        elseif charTable.targetConColor == "RED" then
+            ImGui.PushStyleColor(ImGuiCol.Text, utils.Color("Red",1))
+        end
+
         ImGui.Text(mq.TLO.Spawn(charTable.targetID).DisplayName())
+        ImGui.PopStyleColor(1)
+        ImGui.Separator()
+        ImGui.SetCursorPosX(4)
+        ImGui.Text("Lvl:%i", mq.TLO.Spawn(charTable.targetID).Level())
+        ImGui.SameLine()
+        ImGui.Text(mq.TLO.Spawn(charTable.targetID).Class())
         ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
-        ImGui.ProgressBar(targetHPRatio, -1, 15)
+        ImGui.ProgressBar(targetHPPct, -1, 15)
         ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
         local rowCount = 0
         if charTable.targetBuffs ~= nil then
