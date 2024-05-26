@@ -14,7 +14,7 @@ local loadoutWindow = {}
 
 local spells = {}
 loadoutWindow.loadoutSections = { 'Spells', 'AAs', 'Items' }
-local spellCatList
+local spellCatList = {}
 local subcategories
 local selectedCategory
 local currentCategory = {}
@@ -38,34 +38,34 @@ local function loadLoadoutData(charName)
         loadoutData[charName] = loadoutFile()
     end
 end
-local function BuildSpellCatList(charTable)
+local function BuildSpellCatList(charName, charTable)
     for spellIndex, spellData in ipairs(charTable.Spellbook) do
         local spellEntry = charTable.Spellbook[spellIndex]
         local spellCategory = spellEntry.category
         local spellSubcategory = spellEntry.subcategory
         local categoryFound = false
         local subcategoryFound = false
-        if not spellCatList then spellCatList = {} end
+        if not spellCatList[charName] then spellCatList[charName] = {} end
         -- search if the category already exists, if it doesn't, create it
-        for index, value in pairs(spellCatList) do
+        for index, value in pairs(spellCatList[charName]) do
             if index == spellCategory then
                 categoryFound = true
             end
         end
         if not categoryFound then
-            spellCatList[spellCategory] = {}
+            spellCatList[charName][spellCategory] = {}
             categoryFound = true
         end
 -- now that the category should exist, or already does, search for if the spell's subcategory already exists, if it doesn't create it.
         if categoryFound then
-            for index, value in pairs(spellCatList[spellCategory]) do
+            for index, value in pairs(spellCatList[charName][spellCategory]) do
                 if value == spellSubcategory then
                     subcategoryFound = true
                 end
             end
         end
         if categoryFound and not subcategoryFound then
-            table.insert(spellCatList[spellCategory], spellSubcategory)
+            table.insert(spellCatList[charName][spellCategory], spellSubcategory)
             subcategoryFound = true
         end
     end
@@ -73,7 +73,7 @@ end
 
 function loadoutWindow.DrawSpellCategorySelect(charName, charTable)
     if ImGui.BeginListBox("##Category", ImVec2(150, 300)) then
-        for index, value in pairs(spellCatList) do
+        for index, value in pairs(spellCatList[charName]) do
             local _, clicked = ImGui.Selectable(index, currentCategory[charName] == index)
             ImGui.Separator()
             if clicked then
@@ -90,9 +90,9 @@ end
 function loadoutWindow.DrawSpellSubcategorySelect(charName, charTable)
     if ImGui.BeginListBox("##Subcategory", ImVec2(150, 300)) then
         if currentCategory[charName] ~= nil then
-            for i, item in pairs(spellCatList) do
+            for i, item in pairs(spellCatList[charName]) do
                 if i == currentCategory[charName] then
-                    for index, value in pairs(spellCatList[i]) do
+                    for index, value in pairs(spellCatList[charName][i]) do
                         local _, clicked = ImGui.Selectable(value,
                             currentSubcategory[charName] == value)
                         ImGui.Separator()
@@ -195,7 +195,7 @@ function loadoutWindow.DrawCurrentSpellbar(charName, charTable)
 end
 
 function loadoutWindow.DrawSpellsTab(charName, charTable)
-    if not spellCatList and charTable.Spellbook then BuildSpellCatList(charTable) end
+    if not spellCatList[charName] and charTable.Spellbook then BuildSpellCatList(charName, charTable) end
     -- Draw Spellbar
     loadoutWindow.DrawCurrentSpellbar(charName, charTable)
     ImGui.SetCursorPos(60, 40)
