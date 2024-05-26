@@ -34,6 +34,26 @@ function utils.Color(color, alpha)
     printf("Color: %s doesn't exist.", color)
     return nil
 end
+ function utils.GetConTextColor(conColor)
+    if conColor == "GREY" then
+        return utils.Color("Grey", 1)
+    elseif conColor == "GREEN" then
+        return utils.Color("Green", 1)
+    elseif conColor == "LIGHT BLUE" then
+        return utils.Color("Light Blue", 1)
+    elseif conColor == "BLUE" then
+        return utils.Color("Blue", 1)
+    elseif conColor == "YELLOW" then
+        return utils.Color("Yellow", 1)
+    elseif conColor == "RED" then
+        return utils.Color("Red", 1)
+    elseif conColor == "WHITE" then
+        return utils.Color("White", 1)
+    else
+        -- default white
+        return ImVec4(1, 1, 1, 1)
+    end
+end
 
 function utils.mirrorTarget()
     if mq.TLO.Group.MainAssist.ID() ~= nil and not (mq.TLO.Group.MainAssist.OtherZone() or mq.TLO.Group.MainAssist.Offline() or mq.TLO.Group.MainAssist.Name() == mq.TLO.Me.Name()) then
@@ -55,6 +75,7 @@ function utils.doChase()
         end
     end
 end
+
 
 function utils.meleeHandler()
     if mq.TLO.Target.ID() == 0 or mq.TLO.Target.Dead() then

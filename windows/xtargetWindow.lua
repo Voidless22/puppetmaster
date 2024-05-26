@@ -3,26 +3,7 @@ local imgui = require('ImGui')
 local msgHandler = require('msgHandler')
 local utils = require('utils')
 local xtargetWindow = {}
-local function GetConTextColor(conColor)
-    if conColor == "GREY" then
-        return utils.Color("Grey", 1)
-    elseif conColor == "GREEN" then
-        return utils.Color("Green", 1)
-    elseif conColor == "LIGHT BLUE" then
-        return utils.Color("Light Blue", 1)
-    elseif conColor == "BLUE" then
-        return utils.Color("Blue", 1)
-    elseif conColor == "YELLOW" then
-        return utils.Color("Yellow", 1)
-    elseif conColor == "RED" then
-        return utils.Color("Red", 1)
-    elseif conColor == "WHITE" then
-        return utils.Color("White", 1)
-    else
-        -- default white
-        return ImVec4(1, 1, 1, 1)
-    end
-end
+
 function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
     ImGui.SetWindowSize("XTarget-" .. charName, 128, 256, ImGuiCond.FirstUseEver)
     local xtargetHPPct = {}
@@ -40,7 +21,7 @@ function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
                 xtargetHPPct[xtIndex] = cXTSpawn.PctHPs() / 100 or 0
                 -- set the text color to con color if it exists, otherwise just draw white
                 if cXTData.ConColor ~= 0 and cXTData.ConColor then
-                    ImGui.PushStyleColor(ImGuiCol.Text, GetConTextColor(cXTData.ConColor))
+                    ImGui.PushStyleColor(ImGuiCol.Text, utils.GetConTextColor(cXTData.ConColor))
                     ImGui.Text(cXTSpawn.CleanName())
                     ImGui.PopStyleColor()
                 else

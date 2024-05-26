@@ -77,21 +77,21 @@ local function updateTargetBuffs(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     local targetBuffCount = mq.TLO.Target.BuffCount()
     if targetBuffCount == 0 then
-        for i = 0, #currentBoxIndex.targetBuffs do
-            currentBoxIndex.targetBuffs[i] = nil
+        for i = 0, #currentBoxIndex.Target.Buffs do
+            currentBoxIndex.Target.Buffs[i] = nil
         end
     elseif mq.TLO.Target.BuffCount() and mq.TLO.Target.ID() ~= 0 then
         for i = 0, targetBuffCount do
             local buffFound = false
-            if mq.TLO.Target.Buff(i).SpellID() ~= nil and currentBoxIndex.targetBuffs[i] ~= mq.TLO.Target.Buff(i).SpellID() then
-                for _, value in pairs(currentBoxIndex.targetBuffs) do
+            if mq.TLO.Target.Buff(i).SpellID() ~= nil and currentBoxIndex.Target.Buffs[i] ~= mq.TLO.Target.Buff(i).SpellID() then
+                for _, value in pairs(currentBoxIndex.Target.Buffs) do
                     if value == mq.TLO.Target.Buff(i).SpellID() then
                         buffFound = true
                     end
                 end
             end
             if not buffFound then
-                currentBoxIndex.targetBuffs[i] = mq.TLO.Target.Buff(i).SpellID()
+                currentBoxIndex.Target.Buffs[i] = mq.TLO.Target.Buff(i).SpellID()
             end
         end
     end
@@ -144,7 +144,7 @@ local function updateXTarget(boxName)
             if not currentBoxIndex.XTarget[i] then
                 currentBoxIndex.XTarget[i] = {Id = 0, ConColor = 0, AggroPct = 0}
             end
-            
+
             currentBoxIndex.XTarget[i].Id = mq.TLO.Me.XTarget(i).ID()
             currentBoxIndex.XTarget[i].ConColor = mq.TLO.Me.XTarget(i).ConColor()
             currentBoxIndex.XTarget[i].AggroPct = mq.TLO.Me.XTarget(i).PctAggro()
@@ -185,13 +185,15 @@ function dataHandler.InitializeData(boxName)
     currentBoxIndex.Level = mq.TLO.Me.Level()
     currentBoxIndex.Class = mq.TLO.Me.Class()
     currentBoxIndex.Race = mq.TLO.Me.Race()
-    if not currentBoxIndex.targetBuffs then currentBoxIndex.targetBuffs = {} end
     if not currentBoxIndex.Buffs then currentBoxIndex.Buffs = {} end
     if not currentBoxIndex.XTarget then currentBoxIndex.XTarget = {} end
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
-    currentBoxIndex.targetID = mq.TLO.Target.ID()
-    currentBoxIndex.targetConColor = mq.TLO.Target.ConColor()
+    currentBoxIndex.Target = {id=mq.TLO.Target.ID(), ConColor = mq.TLO.Target.ConColor}
+    if not currentBoxIndex.Target.Buffs then 
+        currentBoxIndex.Target.Buffs = {}
+    end
+
     currentBoxIndex.Spellbook = buildSpellTable()
     currentBoxIndex.CombatAbilities = {}
     currentBoxIndex.PetFollow = true
@@ -212,7 +214,6 @@ end
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
     currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
-    currentBoxIndex.targetConColor = mq.TLO.Target.ConColor()
 
     currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
     currentBoxIndex.isCasting = mq.TLO.Me.Casting()
@@ -221,7 +222,8 @@ function dataHandler.UpdateData(boxName)
     currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
     currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
     updateBuffs(boxName)
-    currentBoxIndex.targetID = mq.TLO.Target.ID()
+    currentBoxIndex.Target.id = mq.TLO.Target.ID()
+    currentBoxIndex.Target.ConColor = mq.TLO.Target.ConColor()
     updateTargetBuffs(boxName)
     updateSpellbar(boxName)
     updateGroup(boxName)

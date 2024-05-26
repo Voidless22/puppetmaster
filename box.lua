@@ -23,7 +23,7 @@ local function main()
         if mq.TLO.Me.Combat() and not dataTable.meleeTarget then
             mq.cmd('/attack off')
         end
-        mq.delay(10)
+        mq.delay(100)
         dataHandler.UpdateData(mq.TLO.Me.Name())
         utils.boxActor:send(msgHandler.driverAddress,
             { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })

@@ -40,7 +40,7 @@ end
 
 local function main()
     while running do
-        mq.delay(10)
+        mq.delay(50)
         dataHandler.UpdateData(mq.TLO.Me.Name())
 
     end
