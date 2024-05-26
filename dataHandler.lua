@@ -29,11 +29,7 @@ local function buildSpellTable()
                 })
         end
     end
-    for index, value in ipairs(spellTable) do
-        local spellEntry = spellTable[index]
-        printf('Index: %i, Category: %s Subcategory: %s Level: %i Name:%s ID:%i', index, spellEntry.category,
-            spellEntry.subcategory, spellEntry.level, spellEntry.name, spellEntry.id)
-    end
+
     return spellTable
 end
 
@@ -64,8 +60,11 @@ local function updateBuffs(boxName)
                 end
             end
             if not buffFound then
-                currentBoxIndex.Buffs[index] = { id = mq.TLO.Me.Buff(index).Spell.ID(), duration = mq.TLO.Me.Buff(index)
-                .Duration.TimeHMS() }
+                currentBoxIndex.Buffs[index] = {
+                    id = mq.TLO.Me.Buff(index).Spell.ID(),
+                    duration = mq.TLO.Me.Buff(index)
+                        .Duration.TimeHMS()
+                }
             end
         else
             currentBoxIndex.Buffs[index] = { id = 0, duration = 0 }
@@ -133,16 +132,15 @@ local function updateXTarget(boxName)
     for i = 1, mq.TLO.Me.XTargetSlots() do
         if mq.TLO.Me.XTarget(i).ID() == nil or mq.TLO.Me.XTarget(i).ID() == 0 then
             if not currentBoxIndex.XTarget[i] then
-                currentBoxIndex.XTarget[i] = {Id = 0, ConColor = 0, AggroPct = 0}
+                currentBoxIndex.XTarget[i] = { Id = 0, ConColor = 0, AggroPct = 0 }
             end
             currentBoxIndex.XTarget[i].Id = 0
             currentBoxIndex.XTarget[i].ConColor = 0
             currentBoxIndex.XTarget[i].AggroPct = 0
-
         end
         if mq.TLO.Me.XTarget(i).ID() ~= nil and mq.TLO.Me.XTarget(i).ID() ~= 0 then
             if not currentBoxIndex.XTarget[i] then
-                currentBoxIndex.XTarget[i] = {Id = 0, ConColor = 0, AggroPct = 0}
+                currentBoxIndex.XTarget[i] = { Id = 0, ConColor = 0, AggroPct = 0 }
             end
 
             currentBoxIndex.XTarget[i].Id = mq.TLO.Me.XTarget(i).ID()
@@ -189,8 +187,8 @@ function dataHandler.InitializeData(boxName)
     if not currentBoxIndex.XTarget then currentBoxIndex.XTarget = {} end
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
-    currentBoxIndex.Target = {id=mq.TLO.Target.ID(), ConColor = mq.TLO.Target.ConColor}
-    if not currentBoxIndex.Target.Buffs then 
+    currentBoxIndex.Target = { id = mq.TLO.Target.ID(), ConColor = mq.TLO.Target.ConColor }
+    if not currentBoxIndex.Target.Buffs then
         currentBoxIndex.Target.Buffs = {}
     end
 

@@ -56,7 +56,7 @@ local function BuildSpellCatList(charName, charTable)
             spellCatList[charName][spellCategory] = {}
             categoryFound = true
         end
--- now that the category should exist, or already does, search for if the spell's subcategory already exists, if it doesn't create it.
+        -- now that the category should exist, or already does, search for if the spell's subcategory already exists, if it doesn't create it.
         if categoryFound then
             for index, value in pairs(spellCatList[charName][spellCategory]) do
                 if value == spellSubcategory then
@@ -105,9 +105,7 @@ function loadoutWindow.DrawSpellSubcategorySelect(charName, charTable)
             end
         end
         ImGui.EndListBox()
-
     end
-
 end
 
 function loadoutWindow.DrawSpellSelect(charName, charTable)
@@ -117,33 +115,36 @@ function loadoutWindow.DrawSpellSelect(charName, charTable)
                 if value.category == currentCategory[charName] and value.subcategory == currentSubcategory[charName] then
                     local _, clicked = ImGui.Selectable('Lvl:' .. value.level .. ' ' .. value.name,
                         currentSpell[charName] == value.name)
-                        if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
-                            if ImGui.BeginItemTooltip() then
-                                ImGui.Text(value.name or "Empty")
-                                ImGui.Text(("Type: "..mq.TLO.Spell(value.name).TargetType()) or "Empty")
-                                ImGui.EndTooltip()
-                            end
+                    if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
+                        if ImGui.BeginItemTooltip() then
+                            ImGui.Text(value.name or "Empty")
+                            ImGui.Text(("Type: " .. mq.TLO.Spell(value.name).TargetType()) or "Empty")
+                            ImGui.EndTooltip()
                         end
+                    end
                     ImGui.Separator()
                     if clicked then
                         currentSpell[charName] = value.name
                         if mq.TLO.Spell(modifyingGem[charName].id).Name() ~= currentSpell[charName] then
                             modifyingGem[charName].id = mq.TLO.Spell(currentSpell[charName]).Name()
-                            utils.driverActor:send(msgHandler.boxAddress,
-                                {
-                                    id = 'updateSpellbar',
-                                    charName = charName,
-                                    gem = modifyingGem[charName].gem,
-                                    spellId = currentSpell
-                                        [charName]
-                                })
+                            if charName ~= mq.TLO.Me.Name() then
+                                utils.driverActor:send(msgHandler.boxAddress,
+                                    {
+                                        id = 'updateSpellbar',
+                                        charName = charName,
+                                        gem = modifyingGem[charName].gem,
+                                        spellId = currentSpell
+                                            [charName]
+                                    })
+                            else
+                                mq.cmdf('/memspell %i "%s"', modifyingGem[charName].gem, currentSpell[charName])
+                            end
                         end
                     end
                 end
             end
         end
         ImGui.EndListBox()
-
     end
 end
 
