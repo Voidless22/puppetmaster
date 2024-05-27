@@ -19,10 +19,10 @@ local colors = {
     ["Red"] = ImVec4(1, 0, 0, 1),
     ["Green"] = ImVec4(0, 1, 0, 1),
     ["Light Blue"] = ImVec4(0.3, 0.64, 1, 1),
-    ["Blue"] = ImVec4(0.2,0.3, 1, 1),
+    ["Blue"] = ImVec4(0.2, 0.3, 1, 1),
     ["Yellow"] = ImVec4(1, 0.94, 0, 1),
-    ["Grey"] = ImVec4(0.42,0.48,0.53,1),
-    ["White"] = ImVec4(1,1,1,1)
+    ["Grey"] = ImVec4(0.42, 0.48, 0.53, 1),
+    ["White"] = ImVec4(1, 1, 1, 1)
 
 }
 
@@ -34,7 +34,8 @@ function utils.Color(color, alpha)
     printf("Color: %s doesn't exist.", color)
     return nil
 end
- function utils.GetConTextColor(conColor)
+
+function utils.GetConTextColor(conColor)
     if conColor == "GREY" then
         return utils.Color("Grey", 1)
     elseif conColor == "GREEN" then
@@ -63,11 +64,16 @@ function utils.mirrorTarget()
     end
 end
 
+function utils.lerpColor(colorA, colorB, rate)
+    local R = (colorB.x - colorA.x) * rate + colorA.x
+    local G = (colorB.y - colorA.y) * rate + colorA.y
+    local B = (colorB.z - colorA.z) * rate + colorA.z
+    return ImVec4(R, G, B, 1)
+end
+
 function utils.doChase()
-    if mq.TLO.Group.MainAssist.ID() ~= nil and not (mq.TLO.Group.MainAssist.OtherZone() or mq.TLO.Group.MainAssist.Offline() or mq.TLO.Group.MainAssist() == mq.TLO.Me.Name())
-    then
-        if not (mq.TLO.Group.MainAssist.OtherZone() or mq.TLO.Group.MainAssist.Offline() or mq.TLO.Group.MainAssist() == mq.TLO.Me.Name()) and
-            mq.TLO.Group.MainAssist.Distance() > 20 and not mq.TLO.Me.Casting() and not dataHandler.boxes[mq.TLO.Me.Name()].meleeTarget then
+    if mq.TLO.Group.MainAssist() and mq.TLO.Spawn(mq.TLO.Group.MainAssist.ID())() and mq.TLO.Group.MainAssist() ~= mq.TLO.Me.Name() then
+        if mq.TLO.Group.MainAssist.Distance() > 15 then
             mq.cmdf("/squelch /nav id %i", mq.TLO.Group.MainAssist.ID())
             while mq.TLO.Navigation.Active() do
                 mq.delay(50)
@@ -76,13 +82,16 @@ function utils.doChase()
     end
 end
 
-
 function utils.meleeHandler()
     if mq.TLO.Target.ID() == 0 or mq.TLO.Target.Dead() then
         dataTable.meleeTarget = false
         utils.boxActor:send(msgHandler.driverAddress,
-            { id = 'updateMeleeTarget', charName = mq.TLO.Me.Name(), meleeTarget = dataHandler.boxes[mq.TLO.Me.Name()]
-            .meleeTarget })
+            {
+                id = 'updateMeleeTarget',
+                charName = mq.TLO.Me.Name(),
+                meleeTarget = dataHandler.boxes[mq.TLO.Me.Name()]
+                    .meleeTarget
+            })
         mq.cmd('/attack off')
     else
         if mq.TLO.Target() ~= nil and mq.TLO.Target.ID() ~= mq.TLO.Me.ID() then

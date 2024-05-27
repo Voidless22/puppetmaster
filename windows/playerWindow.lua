@@ -71,6 +71,7 @@ function playerWindow.DrawPlayerWindow(charName, playerData)
         ImGui.ProgressBar(endRatio, -1, 15)
 
         ImGui.PopStyleColor(3)
+        
     end
 end
 

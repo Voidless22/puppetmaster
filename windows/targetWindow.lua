@@ -40,6 +40,19 @@ function targetWindow.DrawTargetWindow(charName, charTable)
             ImGui.ProgressBar(targetHPPct, -1, 15)
             ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 2)
 
+            if cTData.AggroPct then
+                if cTData.AggroPct >= 0 and cTData.AggroPct < 100 then
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram,
+                        utils.lerpColor(ImVec4(0, 1, 0, 1), ImVec4(1, 1, 0, 1), (cTData.AggroPct / 100)))
+                elseif cTData.AggroPct == 100 then
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram,utils.Color("Red",1))
+                else
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram,utils.Color("Green",1))
+                end
+                ImGui.PushStyleColor(ImGuiCol.Text, ImVec4(0,0,0,0))
+                ImGui.ProgressBar(100, -1, 5)
+                ImGui.PopStyleColor(2)
+            end
             local rowCount = 0
             if charTable.Target.Buffs ~= nil then
                 for _, buff in ipairs(charTable.Target.Buffs) do

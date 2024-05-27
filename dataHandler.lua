@@ -187,7 +187,7 @@ function dataHandler.InitializeData(boxName)
     if not currentBoxIndex.XTarget then currentBoxIndex.XTarget = {} end
     if not currentBoxIndex.Spellbar then currentBoxIndex.Spellbar = {} end
     if not currentBoxIndex.Group then currentBoxIndex.Group = {} end
-    currentBoxIndex.Target = { id = mq.TLO.Target.ID(), ConColor = mq.TLO.Target.ConColor }
+    currentBoxIndex.Target = { id = mq.TLO.Target.ID(), ConColor = mq.TLO.Target.ConColor(), AggroPct = mq.TLO.Target.PctAggro() }
     if not currentBoxIndex.Target.Buffs then
         currentBoxIndex.Target.Buffs = {}
     end
@@ -211,22 +211,25 @@ end
 
 function dataHandler.UpdateData(boxName)
     local currentBoxIndex = dataHandler.boxes[boxName]
-    currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
+    if currentBoxIndex then
+        currentBoxIndex.CastTimeLeft = mq.TLO.Me.CastTimeLeft.Seconds()
 
-    currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
-    currentBoxIndex.isCasting = mq.TLO.Me.Casting()
-    currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
-    currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
-    currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
-    currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
-    updateBuffs(boxName)
-    currentBoxIndex.Target.id = mq.TLO.Target.ID()
-    currentBoxIndex.Target.ConColor = mq.TLO.Target.ConColor()
-    updateTargetBuffs(boxName)
-    updateSpellbar(boxName)
-    updateGroup(boxName)
-    updateXTarget(boxName)
-    updatePet(boxName)
+        currentBoxIndex.Sitting = mq.TLO.Me.Sitting()
+        currentBoxIndex.isCasting = mq.TLO.Me.Casting()
+        currentBoxIndex.PctHP = mq.TLO.Me.PctHPs()
+        currentBoxIndex.PctMana = mq.TLO.Me.PctMana()
+        currentBoxIndex.PctEnd = mq.TLO.Me.PctEndurance()
+        currentBoxIndex.CombatState = mq.TLO.Me.CombatState()
+        updateBuffs(boxName)
+        currentBoxIndex.Target.id = mq.TLO.Target.ID()
+        currentBoxIndex.Target.ConColor = mq.TLO.Target.ConColor()
+        currentBoxIndex.Target.AggroPct = mq.TLO.Target.PctAggro()
+        updateTargetBuffs(boxName)
+        updateSpellbar(boxName)
+        updateGroup(boxName)
+        updateXTarget(boxName)
+        updatePet(boxName)
+    end
 end
 
 return dataHandler

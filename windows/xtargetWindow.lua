@@ -35,23 +35,32 @@ function xtargetWindow.DrawMimicXTargetWindow(charName, charTable)
                 ImGui.PopStyleColor(2)
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() - 3)
                 -- Draw aggro bar if it's necessary
-                if cXTData.AggroPct ~= 0 then
-                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, utils.Color("Green", 1))
-                    ImGui.ProgressBar(cXTData.AggroPct, -1, 5)
-                    ImGui.PopStyleColor(1)
+                if cXTData.AggroPct then
+                    if cXTData.AggroPct >= 0 and cXTData.AggroPct < 100 then
+                        ImGui.PushStyleColor(ImGuiCol.PlotHistogram,
+                            utils.lerpColor(ImVec4(0, 1, 0, 1), ImVec4(1, 1, 0, 1), (cXTData.AggroPct / 100)))
+                    elseif cXTData.AggroPct == 100 then
+                        ImGui.PushStyleColor(ImGuiCol.PlotHistogram,utils.Color("Red",1))
+                    else
+                        ImGui.PushStyleColor(ImGuiCol.PlotHistogram,utils.Color("Green",1))
+                    end
+                    ImGui.PushStyleColor(ImGuiCol.Text, 0, 0, 0, 0)
+
+                    ImGui.ProgressBar(100, -1, 5)
+                    ImGui.PopStyleColor(2)
                 end
+
 
                 ImGui.SetCursorPos(cursorPos)
                 -- create dummy button for targeting
                 xtargetButtons[xtIndex] = ImGui.InvisibleButton(cXTSpawn.Name(), 128, 29)
                 if xtargetButtons[xtIndex] then
                     if charName ~= mq.TLO.Me.Name() then
-                    utils.driverActor:send(msgHandler.boxAddress,
-                        { id = 'newTarget', charName = charName, targetId = cXTSpawn.DisplayName() })
+                        utils.driverActor:send(msgHandler.boxAddress,
+                            { id = 'newTarget', charName = charName, targetId = cXTSpawn.DisplayName() })
                     else
                         mq.cmdf('/mqtarget %s', cXTSpawn.Name())
                     end
-
                 end
                 ImGui.SetCursorPos(4, ImGui.GetCursorPosY() + 5)
             end
