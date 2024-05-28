@@ -73,6 +73,9 @@ function playerWindow.DrawPlayerWindow(charName, playerData)
         ImGui.PopStyleColor(3)
         
     end
+    if ImGui.IsWindowHovered() and ImGui.IsMouseClicked(ImGuiMouseButton.Left) then
+        mq.cmdf('/mqtarget %s', charName)
+    end
 end
 
 return playerWindow
