@@ -14,7 +14,7 @@ local loadoutWindow = {}
 
 local spells = {}
 loadoutWindow.loadoutSections = { 'Spells', 'AAs', 'Items' }
-local spellCatList = {}
+local SpellTable = {}
 local subcategories
 local selectedCategory
 local currentCategory = {}
@@ -28,23 +28,44 @@ local function drawSquare(screenCursorPos, color)
     drawlist:AddRect(screenCursorPos, ImVec2(x, y), color, 0, ImDrawFlags.None, 2)
 end
 
+local function BuildSpellDB(charTable)
+    local spellDB = {}
+    if charTable.Spellbook then
+        for bookIndex, spellData in ipairs(charTable.Spellbook) do
+            local spellCategoryFound = false
+            local spellSubcategoryFound = false
+            local spellFound = false
+            if not spellDB[spellData.category] then
+                spellDB[spellData.category] = {}
+            end
 
-local function loadLoadoutData(charName)
-    local loadoutFile, err = loadfile('mimicLoadouts-' .. charName)
-    if err then
-        mq.pickle('mimicLoadouts-' .. charName, loadoutData[charName])
-    end
-    if loadoutFile then
-        loadoutData[charName] = loadoutFile()
+            if not spellDB[spellData.category][spellData.subcategory] then
+                spellDB[spellData.category][spellData.subcategory] = {}
+            end
+            for index, value in ipairs(spellDB[spellData.category][spellData.subcategory]) do
+                if value == spellData.id then spellFound = true end
+            end
+            if not spellFound then
+                table.insert(spellDB[spellData.category][spellData.subcategory], spellData.id)
+            end
+        end
+        return spellDB
     end
 end
+
+
+
+
+
 local function BuildSpellCatList(charName, charTable)
     for spellIndex, spellData in ipairs(charTable.Spellbook) do
         local spellEntry = charTable.Spellbook[spellIndex]
         local spellCategory = spellEntry.category
         local spellSubcategory = spellEntry.subcategory
+        local spellId = spellEntry.id
         local categoryFound = false
         local subcategoryFound = false
+        local spellIdFound = false
         if not spellCatList[charName] then spellCatList[charName] = {} end
         -- search if the category already exists, if it doesn't, create it
         for index, value in pairs(spellCatList[charName]) do
@@ -68,12 +89,16 @@ local function BuildSpellCatList(charName, charTable)
             table.insert(spellCatList[charName][spellCategory], spellSubcategory)
             subcategoryFound = true
         end
+
+        for index, value in pairs(spellCatList[charName]) do
+
+        end
     end
 end
 
 function loadoutWindow.DrawSpellCategorySelect(charName, charTable)
     if ImGui.BeginListBox("##Category", ImVec2(150, 300)) then
-        for index, value in pairs(spellCatList[charName]) do
+        for index, value in pairs(SpellTable[charName]) do
             local _, clicked = ImGui.Selectable(index, currentCategory[charName] == index)
             ImGui.Separator()
             if clicked then
@@ -90,17 +115,13 @@ end
 function loadoutWindow.DrawSpellSubcategorySelect(charName, charTable)
     if ImGui.BeginListBox("##Subcategory", ImVec2(150, 300)) then
         if currentCategory[charName] ~= nil then
-            for i, item in pairs(spellCatList[charName]) do
-                if i == currentCategory[charName] then
-                    for index, value in pairs(spellCatList[charName][i]) do
-                        local _, clicked = ImGui.Selectable(value,
-                            currentSubcategory[charName] == value)
-                        ImGui.Separator()
-                        if clicked then
-                            currentSpell[charName] = nil
-                            currentSubcategory[charName] = value
-                        end
-                    end
+            for i, item in pairs(SpellTable[charName][currentCategory[charName]]) do
+                local _, clicked = ImGui.Selectable(i,
+                    currentSubcategory[charName] == i)
+                ImGui.Separator()
+                if clicked then
+                    currentSpell[charName] = nil
+                    currentSubcategory[charName] = i
                 end
             end
         end
@@ -111,39 +132,40 @@ end
 function loadoutWindow.DrawSpellSelect(charName, charTable)
     if ImGui.BeginListBox("##Spells", ImVec2(200, 300)) then
         if currentSubcategory[charName] ~= nil and currentCategory[charName] ~= nil then
-            for index, value in ipairs(charTable.Spellbook) do
-                if value.category == currentCategory[charName] and value.subcategory == currentSubcategory[charName] then
-                    local _, clicked = ImGui.Selectable('Lvl:' .. value.level .. ' ' .. value.name,
-                        currentSpell[charName] == value.name)
-                    if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
-                        if ImGui.BeginItemTooltip() then
-                            ImGui.Text(value.name or "Empty")
-                            ImGui.Text(("Type: " .. mq.TLO.Spell(value.name).TargetType()) or "Empty")
-                            ImGui.EndTooltip()
-                        end
+            for index, value in ipairs(SpellTable[charName][currentCategory[charName]][currentSubcategory[charName]]) do
+                local spellLvl = mq.TLO.Spell(value).Level()
+                local spellName = mq.TLO.Spell(value).Name()
+                local _, clicked = ImGui.Selectable('Lvl:' .. spellLvl .. ' ' .. spellName,
+                    currentSpell[charName] == spellName)
+                if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
+                    if ImGui.BeginItemTooltip() then
+                        ImGui.Text(spellName or "Empty")
+                        ImGui.Text(("Type: " .. mq.TLO.Spell(spellName).TargetType()) or "Empty")
+                        ImGui.EndTooltip()
                     end
-                    ImGui.Separator()
-                    if clicked then
-                        currentSpell[charName] = value.name
-                        if mq.TLO.Spell(modifyingGem[charName].id).Name() ~= currentSpell[charName] then
-                            modifyingGem[charName].id = mq.TLO.Spell(currentSpell[charName]).Name()
-                            if charName ~= mq.TLO.Me.Name() then
-                                utils.driverActor:send(msgHandler.boxAddress,
-                                    {
-                                        id = 'updateSpellbar',
-                                        charName = charName,
-                                        gem = modifyingGem[charName].gem,
-                                        spellId = currentSpell
-                                            [charName]
-                                    })
-                            else
-                                mq.cmdf('/memspell %i "%s"', modifyingGem[charName].gem, currentSpell[charName])
-                            end
+                end
+                ImGui.Separator()
+                if clicked then
+                    currentSpell[charName] = spellName
+                    if mq.TLO.Spell(modifyingGem[charName].id).Name() ~= currentSpell[charName] then
+                        modifyingGem[charName].id = mq.TLO.Spell(currentSpell[charName]).Name()
+                        if charName ~= mq.TLO.Me.Name() then
+                            utils.driverActor:send(msgHandler.boxAddress,
+                                {
+                                    id = 'updateSpellbar',
+                                    charName = charName,
+                                    gem = modifyingGem[charName].gem,
+                                    spellId = currentSpell
+                                        [charName]
+                                })
+                        else
+                            mq.cmdf('/memspell %i "%s"', modifyingGem[charName].gem, currentSpell[charName])
                         end
                     end
                 end
             end
         end
+
         ImGui.EndListBox()
     end
 end
@@ -196,11 +218,11 @@ function loadoutWindow.DrawCurrentSpellbar(charName, charTable)
 end
 
 function loadoutWindow.DrawSpellsTab(charName, charTable)
-    if not spellCatList[charName] and charTable.Spellbook then BuildSpellCatList(charName, charTable) end
+    if not SpellTable[charName] and charTable.Spellbook then SpellTable[charName] = BuildSpellDB(charTable) end
     -- Draw Spellbar
     loadoutWindow.DrawCurrentSpellbar(charName, charTable)
     ImGui.SetCursorPos(60, 40)
-    if spellCatList and charTable.Spellbook then
+    if SpellTable[charName] and charTable.Spellbook then
         loadoutWindow.DrawSpellCategorySelect(charName, charTable)
         ImGui.SetCursorPos(212, 40)
         loadoutWindow.DrawSpellSubcategorySelect(charName, charTable)

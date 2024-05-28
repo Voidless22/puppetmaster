@@ -24,8 +24,7 @@ local function buildSpellTable()
                     subcategory = spellSubcategory,
                     level = spellLevel,
                     name = spellName,
-                    id =
-                        spellID
+                    id = spellID
                 })
         end
     end
