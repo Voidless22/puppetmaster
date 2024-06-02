@@ -46,7 +46,7 @@ local function BuildSpellDB(charTable)
                 if value == spellData.id then spellFound = true end
             end
             if not spellFound then
-                table.insert(spellDB[spellData.category][spellData.subcategory], spellData.id)
+                table.insert(spellDB[spellData.category][spellData.subcategory], {spellData.id, spellData.level})
             end
         end
         return spellDB
@@ -133,9 +133,9 @@ function loadoutWindow.DrawSpellSelect(charName, charTable)
     if ImGui.BeginListBox("##Spells", ImVec2(200, 300)) then
         if currentSubcategory[charName] ~= nil and currentCategory[charName] ~= nil then
             for index, value in ipairs(SpellTable[charName][currentCategory[charName]][currentSubcategory[charName]]) do
-                local spellLvl = mq.TLO.Spell(value).Level()
-                local spellName = mq.TLO.Spell(value).Name()
-                local _, clicked = ImGui.Selectable('Lvl:' .. spellLvl .. ' ' .. spellName,
+             
+                local spellName = mq.TLO.Spell(value[1]).Name()
+                local _, clicked = ImGui.Selectable('Lvl:' .. value[2] .. ' ' .. spellName,
                     currentSpell[charName] == spellName)
                 if ImGui.IsItemHovered(ImGuiHoveredFlags.DelayNormal) then
                     if ImGui.BeginItemTooltip() then
