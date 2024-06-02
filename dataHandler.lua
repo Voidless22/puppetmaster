@@ -4,22 +4,6 @@ local dataHandler = {}
 
 dataHandler.boxes = {}
 dataHandler.updateQueue = {}
-
-function dataHandler.AddNewCharacter(name)
-    if not dataHandler.boxes[name] then
-        dataHandler.boxes[name] = {}
-
-        printf('\agData Manager: \awEntry created in Character Data table: \at%s', name)
-    else
-        printf('\agData Manager: \arCharacter Data Entry creation attempted, but already exists.')
-    end
-end
-
-function dataHandler.GetData(boxName)
-    if dataHandler.boxes[boxName] then
-        return dataHandler.boxes[boxName]
-    end
-end
 local spellTable = {}
 local function buildSpellTable()
     for i = 1, 720 do
@@ -43,6 +27,37 @@ local function buildSpellTable()
 
     return spellTable
 end
+local function returnIsCasting()
+    if mq.TLO.Me.Casting() then
+        return true
+    else
+        return false
+    end
+end
+
+local function returnSpellCD(gem)
+    if not mq.TLO.Me.SpellReady(gem)() then
+        return mq.TLO.Me.Gem(gem).RecastTime()
+    else
+        return 0
+    end
+end
+function dataHandler.AddNewCharacter(name)
+    if not dataHandler.boxes[name] then
+        dataHandler.boxes[name] = {}
+
+        printf('\agData Manager: \awEntry created in Character Data table: \at%s', name)
+    else
+        printf('\agData Manager: \arCharacter Data Entry creation attempted, but already exists.')
+    end
+end
+ 
+function dataHandler.GetData(boxName)
+    if dataHandler.boxes[boxName] then
+        return dataHandler.boxes[boxName]
+    end
+end
+
 function dataHandler.InitializeData(boxName)
     dataHandler.boxes[boxName] = {}
     local cBox = dataHandler.boxes[boxName]
@@ -89,62 +104,6 @@ function dataHandler.UpdateCheck(dataIndex, prevData, currentData, subIndex)
         return
     end
 end
-local function returnIsCasting()
-    if mq.TLO.Me.Casting() then
-        return true
-    else
-        return false
-    end
-end
-
-local function returnSpellCD(gem)
-    if not mq.TLO.Me.SpellReady(gem)() then
-        return mq.TLO.Me.Gem(gem).RecastTime()
-    else
-        return 0
-    end
-end
-
-function dataHandler.UpdateSpellbar(boxName)
-    local cBox = dataHandler.boxes[boxName]
-    for gem = 1, mq.TLO.Me.NumGems() do
-        dataHandler.UpdateCheck("Spellbar", cBox.Spellbar[gem], (mq.TLO.Me.Gem(gem).ID() or 0), gem)
-        dataHandler.UpdateCheck("SpellCooldowns", cBox.SpellCooldowns[gem], returnSpellCD(gem), gem)
-    end
-end
-
-function dataHandler.UpdateBuffs(boxName)
-    local cBox = dataHandler.boxes[boxName]
-    for i = 1, mq.TLO.Me.MaxBuffSlots() do
-        dataHandler.UpdateCheck("BuffIds", cBox.BuffIds[i], (mq.TLO.Me.Buff(i).Spell.ID() or 0), i)
-        dataHandler.UpdateCheck("BuffDurations", cBox.BuffDurations[i], (mq.TLO.Me.Buff(i).Duration.TimeHMS() or 0), i)
-    end
-end
-
-function dataHandler.UpdateGroup(boxName)
-    local cBox = dataHandler.boxes[boxName]
-    for i = 0, mq.TLO.Me.GroupSize() do
-        dataHandler.UpdateCheck("Group", cBox.Group[i], mq.TLO.Group.Member(i).Name(), i)
-    end
-end
-
-function dataHandler.UpdateXTarget(boxName)
-    local cBox = dataHandler.boxes[boxName]
-    for i = 1, mq.TLO.Me.XTargetSlots() do
-        dataHandler.UpdateCheck("xtIDs", cBox.xtIDs[i], (mq.TLO.Me.XTarget(i).ID() or 0), i)
-        dataHandler.UpdateCheck("xtConColors", cBox.xtConColors[i], (mq.TLO.Me.XTarget(i).ConColor() or 0), i)
-        dataHandler.UpdateCheck("xtAggroPcts", cBox.xtAggroPcts[i], (mq.TLO.Me.XTarget(i).PctAggro() or 0), i)
-    end
-end
-
-function dataHandler.UpdateTargetBuffs(boxName)
-    local cBox = dataHandler.boxes[boxName]
-
-    for i = 1, (mq.TLO.Target.BuffCount() or 1) do
-        dataHandler.UpdateCheck("TargetBuffs", cBox.TargetBuffs[i], mq.TLO.Target.Buff(i).SpellID(), i)
-    end
-end
-
 function dataHandler.ProcessQueue(boxName)
     local cBox = dataHandler.boxes[boxName]
     for index, value in pairs(dataHandler.updateQueue) do
@@ -161,7 +120,42 @@ function dataHandler.ProcessQueue(boxName)
         end
     end
 end
+function dataHandler.UpdateSpellbar(boxName)
+    local cBox = dataHandler.boxes[boxName]
+    local gemCount = 8 + (mq.TLO.Me.AltAbility("Mnemonic Retention").Rank() or 0)
+    for gem = 1, gemCount do
+        dataHandler.UpdateCheck("Spellbar", cBox.Spellbar[gem], (mq.TLO.Me.Gem(gem).ID() or 0), gem)
+        dataHandler.UpdateCheck("SpellCooldowns", cBox.SpellCooldowns[gem], returnSpellCD(gem), gem)
+    end
+end
+function dataHandler.UpdateBuffs(boxName)
+    local cBox = dataHandler.boxes[boxName]
+    for i = 1, mq.TLO.Me.MaxBuffSlots() do
+        dataHandler.UpdateCheck("BuffIds", cBox.BuffIds[i], (mq.TLO.Me.Buff(i).Spell.ID() or 0), i)
+        dataHandler.UpdateCheck("BuffDurations", cBox.BuffDurations[i], (mq.TLO.Me.Buff(i).Duration.TimeHMS() or 0), i)
+    end
+end
+function dataHandler.UpdateGroup(boxName)
+    local cBox = dataHandler.boxes[boxName]
+    for i = 0, mq.TLO.Me.GroupSize() do
+        dataHandler.UpdateCheck("Group", cBox.Group[i], mq.TLO.Group.Member(i).Name(), i)
+    end
+end
+function dataHandler.UpdateXTarget(boxName)
+    local cBox = dataHandler.boxes[boxName]
+    for i = 1, mq.TLO.Me.XTargetSlots() do
+        dataHandler.UpdateCheck("xtIDs", cBox.xtIDs[i], (mq.TLO.Me.XTarget(i).ID() or 0), i)
+        dataHandler.UpdateCheck("xtConColors", cBox.xtConColors[i], (mq.TLO.Me.XTarget(i).ConColor() or 0), i)
+        dataHandler.UpdateCheck("xtAggroPcts", cBox.xtAggroPcts[i], (mq.TLO.Me.XTarget(i).PctAggro() or 0), i)
+    end
+end
+function dataHandler.UpdateTargetBuffs(boxName)
+    local cBox = dataHandler.boxes[boxName]
 
+    for i = 1, (mq.TLO.Target.BuffCount() or 1) do
+        dataHandler.UpdateCheck("TargetBuffs", cBox.TargetBuffs[i], mq.TLO.Target.Buff(i).SpellID(), i)
+    end
+end
 function dataHandler.UpdateData(boxName)
     local cBox = dataHandler.boxes[boxName]
     dataHandler.UpdateCheck("Sitting", cBox.Sitting, mq.TLO.Me.Sitting())
