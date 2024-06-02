@@ -27,6 +27,10 @@ local function buildSpellTable()
 
     return spellTable
 end
+
+
+
+
 local function returnIsCasting()
     if mq.TLO.Me.Casting() then
         return true

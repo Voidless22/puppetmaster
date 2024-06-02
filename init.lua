@@ -37,6 +37,31 @@ local function updateBoxData()
     utils.driverActor:send(msgHandler.boxAddress, { id = 'UpdateData' })
 end
 
+local function addNewSpell(line, arg1)
+    local spellFound = false
+    for index, value in ipairs(dataHandler.boxes[mq.TLO.Me.Name()].Spellbook) do
+        if value.name == arg1 then
+            spellFound = true
+        end
+    end
+    if not spellFound then
+        local spellID = mq.TLO.Spell(arg1).ID()
+        local spellCategory = mq.TLO.Spell(spellID).Category()
+        local spellSubcategory = mq.TLO.Spell(spellID).Subcategory()
+        local spellLevel = mq.TLO.Spell(spellID).Level()
+        local spellName = arg1
+
+        table.insert(dataHandler.boxes[mq.TLO.Me.Name()].Spellbook,
+            {
+                category = spellCategory,
+                subcategory = spellSubcategory,
+                level = spellLevel,
+                name = spellName,
+                id = spellID
+            })
+    end
+end
+
 
 local function main()
     while running do
@@ -76,6 +101,8 @@ elseif settingsFile then
     end
 end
 dataHandler.InitializeData(mq.TLO.Me.Name())
+mq.event("NewSpellScribed", "You have finished scribing #1#.",addNewSpell)
+
 mq.bind('/pmsettings', function() OpenSettings = not OpenSettings end)
 mq.bind('/updatedata', updateBoxData)
 mq.imgui.init('Puppetmaster', gui.guiLoop)

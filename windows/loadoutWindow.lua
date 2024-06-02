@@ -218,7 +218,6 @@ function loadoutWindow.DrawCurrentSpellbar(charName, charTable)
 end
 
 function loadoutWindow.DrawSpellsTab(charName, charTable)
-    if not SpellTable[charName] and charTable.Spellbook then SpellTable[charName] = BuildSpellDB(charTable) end
     -- Draw Spellbar
     loadoutWindow.DrawCurrentSpellbar(charName, charTable)
     ImGui.SetCursorPos(60, 40)
@@ -238,6 +237,7 @@ function loadoutWindow.DrawTabScreen(tab, charName, charTable)
 end
 
 function loadoutWindow.DrawLoadoutWindow(charName, charTable)
+    if charTable.Spellbook then SpellTable[charName] = BuildSpellDB(charTable) end
     if modifyingGem[charName] == nil then modifyingGem[charName] = { gem = 1, id = nil } end
     ImGui.SetWindowSize("Loadout-" .. charName, 600, 380, ImGuiCond.FirstUseEver)
     if ImGui.BeginTabBar("##loadoutSections") then
