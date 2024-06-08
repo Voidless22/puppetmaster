@@ -61,6 +61,9 @@ function utils.mirrorTarget()
         if mq.TLO.Target.ID() ~= mq.TLO.Me.GroupAssistTarget.ID() then
             mq.TLO.Me.GroupAssistTarget.DoTarget()
         end
+        if mq.TLO.Me.GroupAssistTarget.ID() == 0 and mq.TLO.Target.ID() ~= 0  then
+            mq.cmd('/target clear')
+        end
     end
 end
 

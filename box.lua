@@ -42,7 +42,7 @@ end
 
 local function handleMessageQueue()
     local messageQueue = dataHandler.GetMessageQueue()
-    for index, value in ipairs(messageQueue) do
+    for index, value in pairs(messageQueue) do
         local cBox = dataHandler.GetData(mq.TLO.Me.Name())
         local dataIndex = messageQueue[index].index
         local dataSubIndex = messageQueue[index].subtable
@@ -79,9 +79,9 @@ local function main()
         end
         mq.delay(100)
         mq.doevents()
-        handleMessageQueue()
         dataHandler.UpdateData(mq.TLO.Me.Name())
-      
+        handleMessageQueue()
+
     end
 end
 
