@@ -25,7 +25,6 @@ function msgHandler.boxMessageHandler(message)
     elseif msgId == 'castSpell' and message.content.charName == mq.TLO.Me.Name() then
         dataHandler.boxes[message.content.charName].lastCastGem = message.content.gem
         mq.cmdf('/cast %i', message.content.gem)
-
     elseif msgId == 'newTarget' and message.content.charName == mq.TLO.Me.Name() then
         mq.cmdf('/target %s', message.content.targetId)
     elseif message.content.id == 'petFollowUpdate' and message.content.charName == mq.TLO.Me.Name() then
@@ -62,7 +61,7 @@ function msgHandler.boxMessageHandler(message)
         end
 
         -- Attack Button Message
-    elseif message.content.id == 'updateMeleeTarget' and message.content.charName == mq.TLO.Me.Name()  then
+    elseif message.content.id == 'updateMeleeTarget' and message.content.charName == mq.TLO.Me.Name() then
         dataHandler.boxes[message.content.charName].meleeTarget = message.content.meleeTarget
         -- Clear Target message
     elseif message.content.id == 'clearTarget' and message.content.charName == mq.TLO.Me.Name() then
@@ -107,11 +106,19 @@ function msgHandler.driverMessageHandler(message)
             message:send({ id = 'ReadyToGo' })
         end
     end
-    if msgId == 'UpdatedData' then
+    if msgId == 'InitData' then
         dataHandler.boxes[message.content.boxName] = message.content.boxData
-        
+    end
+    if msgId == 'UpdatedData' then
+        local boxName = message.content.boxName
+        local dataIndex = message.content.dataIndex
+        local dataSubIndex = message.content.dataSubIndex
+        if dataSubIndex then
+            dataHandler.boxes[boxName][dataIndex][dataSubIndex] = message.content.boxData
+        else
+            dataHandler.boxes[boxName][dataIndex] = message.content.boxData
+        end
     end
 end
-
 
 return msgHandler

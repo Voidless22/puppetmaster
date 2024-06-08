@@ -4,6 +4,7 @@ local dataHandler = {}
 
 dataHandler.boxes = {}
 dataHandler.updateQueue = {}
+dataHandler.messageQueue = {}
 local spellTable = {}
 local function buildSpellTable()
     for i = 1, 720 do
@@ -27,10 +28,6 @@ local function buildSpellTable()
 
     return spellTable
 end
-
-
-
-
 local function returnIsCasting()
     if mq.TLO.Me.Casting() then
         return true
@@ -55,13 +52,6 @@ function dataHandler.AddNewCharacter(name)
         printf('\agData Manager: \arCharacter Data Entry creation attempted, but already exists.')
     end
 end
- 
-function dataHandler.GetData(boxName)
-    if dataHandler.boxes[boxName] then
-        return dataHandler.boxes[boxName]
-    end
-end
-
 function dataHandler.InitializeData(boxName)
     dataHandler.boxes[boxName] = {}
     local cBox = dataHandler.boxes[boxName]
@@ -90,7 +80,23 @@ function dataHandler.InitializeData(boxName)
     cBox.xtConColors = {}
     cBox.xtAggroPcts = {}
 end
+function dataHandler.GetData(boxName)
+    if dataHandler.boxes[boxName] then
+        return dataHandler.boxes[boxName]
+    end
+end
 
+function dataHandler.GetMessageQueue()
+    return dataHandler.messageQueue
+end
+
+function dataHandler.SetMessageQueue(index, data)
+    if data == 0 then
+        dataHandler.messageQueue[index] = nil
+    else
+        dataHandler.messageQueue[index] = data
+    end
+end
 function dataHandler.UpdateCheck(dataIndex, prevData, currentData, subIndex)
     if dataHandler.updateQueue[dataIndex] == nil then
         dataHandler.updateQueue[dataIndex] = {}
@@ -108,6 +114,7 @@ function dataHandler.UpdateCheck(dataIndex, prevData, currentData, subIndex)
         return
     end
 end
+
 function dataHandler.ProcessQueue(boxName)
     local cBox = dataHandler.boxes[boxName]
     for index, value in pairs(dataHandler.updateQueue) do
@@ -115,15 +122,18 @@ function dataHandler.ProcessQueue(boxName)
             for subtable, data in pairs(value) do
                 if cBox[index] then
                     cBox[index][subtable] = data
+                    table.insert(dataHandler.messageQueue, { index = index, subtable = subtable })
                     printf("Updating %s: Subtable: %s value:%s", index, subtable, data)
                 end
             end
         else
             printf('Updating: %s to %s', index, value)
             cBox[index] = value
+            table.insert(dataHandler.messageQueue, { index = index })
         end
     end
 end
+
 function dataHandler.UpdateSpellbar(boxName)
     local cBox = dataHandler.boxes[boxName]
     local gemCount = 8 + (mq.TLO.Me.AltAbility("Mnemonic Retention").Rank() or 0)
@@ -132,6 +142,7 @@ function dataHandler.UpdateSpellbar(boxName)
         dataHandler.UpdateCheck("SpellCooldowns", cBox.SpellCooldowns[gem], returnSpellCD(gem), gem)
     end
 end
+
 function dataHandler.UpdateBuffs(boxName)
     local cBox = dataHandler.boxes[boxName]
     for i = 1, mq.TLO.Me.MaxBuffSlots() do
@@ -139,12 +150,14 @@ function dataHandler.UpdateBuffs(boxName)
         dataHandler.UpdateCheck("BuffDurations", cBox.BuffDurations[i], (mq.TLO.Me.Buff(i).Duration.TimeHMS() or 0), i)
     end
 end
+
 function dataHandler.UpdateGroup(boxName)
     local cBox = dataHandler.boxes[boxName]
     for i = 0, mq.TLO.Me.GroupSize() do
         dataHandler.UpdateCheck("Group", cBox.Group[i], mq.TLO.Group.Member(i).Name(), i)
     end
 end
+
 function dataHandler.UpdateXTarget(boxName)
     local cBox = dataHandler.boxes[boxName]
     for i = 1, mq.TLO.Me.XTargetSlots() do
@@ -153,6 +166,7 @@ function dataHandler.UpdateXTarget(boxName)
         dataHandler.UpdateCheck("xtAggroPcts", cBox.xtAggroPcts[i], (mq.TLO.Me.XTarget(i).PctAggro() or 0), i)
     end
 end
+
 function dataHandler.UpdateTargetBuffs(boxName)
     local cBox = dataHandler.boxes[boxName]
 
@@ -160,6 +174,7 @@ function dataHandler.UpdateTargetBuffs(boxName)
         dataHandler.UpdateCheck("TargetBuffs", cBox.TargetBuffs[i], mq.TLO.Target.Buff(i).SpellID(), i)
     end
 end
+
 function dataHandler.UpdateData(boxName)
     local cBox = dataHandler.boxes[boxName]
     dataHandler.UpdateCheck("Sitting", cBox.Sitting, mq.TLO.Me.Sitting())

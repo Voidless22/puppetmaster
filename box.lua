@@ -1,10 +1,10 @@
-local mq            = require('mq')
-local actors        = require('actors')
-local msgHandler    = require('msgHandler')
-local utils         = require('utils')
-local Running       = true
-local dataHandler   = require('dataHandler')
-local boxName       = mq.TLO.Me.Name()
+local mq          = require('mq')
+local actors      = require('actors')
+local msgHandler  = require('msgHandler')
+local utils       = require('utils')
+local Running     = true
+local dataHandler = require('dataHandler')
+local boxName     = mq.TLO.Me.Name()
 
 
 local dataTable
@@ -40,6 +40,34 @@ local function addNewSpell(line, arg1)
     end
 end
 
+local function handleMessageQueue()
+    local messageQueue = dataHandler.GetMessageQueue()
+    for index, value in ipairs(messageQueue) do
+        local cBox = dataHandler.GetData(mq.TLO.Me.Name())
+        local dataIndex = messageQueue[index].index
+        local dataSubIndex = messageQueue[index].subtable
+        local payload
+        if dataSubIndex then
+            payload = {
+                id = 'UpdatedData',
+                boxName = mq.TLO.Me.Name(),
+                dataIndex = dataIndex,
+                dataSubIndex = dataSubIndex,
+                boxData = cBox[dataIndex][dataSubIndex]
+            }
+        else
+            payload = {
+                id = 'UpdatedData',
+                boxName = mq.TLO.Me.Name(),
+                dataIndex = dataIndex,
+                boxData = cBox[dataIndex]
+            }
+        end
+        utils.boxActor:send(msgHandler.driverAddress, payload)
+        dataHandler.SetMessageQueue(index, 0)
+    end
+end
+
 
 local function main()
     while Running do
@@ -51,16 +79,17 @@ local function main()
         end
         mq.delay(100)
         mq.doevents()
+        handleMessageQueue()
         dataHandler.UpdateData(mq.TLO.Me.Name())
-        utils.boxActor:send(msgHandler.driverAddress,
-            { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
+      
     end
 end
 
 dataHandler.AddNewCharacter(mq.TLO.Me.Name())
 dataHandler.InitializeData(mq.TLO.Me.Name())
 dataTable = dataHandler.boxes[mq.TLO.Me.Name()]
-
-mq.event("NewSpellScribed", "You have finished scribing #1#.",addNewSpell)
-utils.boxActor:send(msgHandler.driverAddress, { id = "UpdatedData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
+dataHandler.UpdateData(mq.TLO.Me.Name())
+mq.event("NewSpellScribed", "You have finished scribing #1#.", addNewSpell)
+utils.boxActor:send(msgHandler.driverAddress,
+    { id = "InitData", boxName = boxName, boxData = dataHandler.GetData(boxName) })
 main()
