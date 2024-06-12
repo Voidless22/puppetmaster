@@ -71,6 +71,7 @@ end
 
 local function main()
     while Running do
+        handleMessageQueue()
         if dataTable.chaseToggle then utils.doChase() end
         if dataTable.followMATarget then utils.mirrorTarget() end
         if dataTable.meleeTarget then utils.meleeHandler() end
@@ -80,7 +81,6 @@ local function main()
         mq.delay(100)
         mq.doevents()
         dataHandler.UpdateData(mq.TLO.Me.Name())
-        handleMessageQueue()
 
     end
 end

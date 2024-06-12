@@ -114,9 +114,9 @@ function msgHandler.driverMessageHandler(message)
         local dataIndex = message.content.dataIndex
         local dataSubIndex = message.content.dataSubIndex
         if dataSubIndex and dataHandler.boxes[boxName][dataIndex] ~= nil then
-            print(dataIndex)
-            print(dataSubIndex)
-            dataHandler.boxes[boxName][dataIndex][dataSubIndex] = message.content.boxData
+            if dataHandler.boxes[boxName][dataIndex][dataSubIndex] then
+                dataHandler.boxes[boxName][dataIndex][dataSubIndex] = message.content.boxData
+            end
         else
             dataHandler.boxes[boxName][dataIndex] = message.content.boxData
         end

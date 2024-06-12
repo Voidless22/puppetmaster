@@ -35,7 +35,6 @@ local function returnIsCasting()
         return false
     end
 end
-
 local function returnSpellCD(gem)
     if not mq.TLO.Me.SpellReady(gem)() then
         return mq.TLO.Me.Gem(gem).RecastTime()
@@ -123,11 +122,9 @@ function dataHandler.ProcessQueue(boxName)
                 if cBox[index] then
                     cBox[index][subtable] = data
                     table.insert(dataHandler.messageQueue, { index = index, subtable = subtable })
-                    printf("Updating %s: Subtable: %s value:%s", index, subtable, data)
                 end
             end
         else
-            printf('Updating: %s to %s', index, value)
             cBox[index] = value
             table.insert(dataHandler.messageQueue, { index = index })
         end
@@ -170,7 +167,7 @@ end
 function dataHandler.UpdateTargetBuffs(boxName)
     local cBox = dataHandler.boxes[boxName]
 
-    for i = 1, (mq.TLO.Target.BuffCount() or 1) do
+    for i = 0, (mq.TLO.Target.BuffCount() or 1) do
         dataHandler.UpdateCheck("TargetBuffs", cBox.TargetBuffs[i], mq.TLO.Target.Buff(i).SpellID(), i)
     end
 end

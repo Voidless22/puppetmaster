@@ -54,8 +54,8 @@ function targetWindow.DrawTargetWindow(charName, charTable)
                 ImGui.PopStyleColor(2)
             end
             local rowCount = 0
-            if charTable.Target.Buffs ~= nil then
-                for _, buff in ipairs(charTable.Target.Buffs) do
+            if charTable.TargetBuffs ~= nil then
+                for _, buff in ipairs(charTable.TargetBuffs) do
                     animSpellIcons:SetTextureCell(mq.TLO.Spell(buff).SpellIcon())
                     if currentColumn < columnCount then
                         local prevX = ImGui.GetCursorPosX()
